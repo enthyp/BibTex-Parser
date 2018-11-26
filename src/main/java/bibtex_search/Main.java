@@ -1,6 +1,5 @@
 package bibtex_search;
 
-import bibtex_search.bib_db.BibDB;
 import bibtex_search.bib_parser.BibParser;
 import org.apache.commons.cli.*;
 
@@ -15,9 +14,9 @@ public class Main {
         if (cmd != null) {
             /* Arguments parsed no problem. */
             BibParser bibParser = new BibParser();
+
             try {
                 bibParser.parse(cmd.getOptionValue("f"));
-                BibDB bibDB = new BibDB(bibParser.getRecords());
 
                 // ...some searching based on command line arguments / print all.
             } catch (FileNotFoundException exc) {
