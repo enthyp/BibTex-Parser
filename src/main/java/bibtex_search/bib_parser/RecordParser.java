@@ -6,15 +6,161 @@ import bibtex_search.bib_parser.record.RecordType;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RecordParser {
+    private static Map<RecordType, Set<String>> mandatoryFields = new HashMap<RecordType, Set<String>>() {{
+        put(RecordType.ARTICLE, new HashSet<String>(){{
+            add("author"); // TODO: how to indicate 'editor' alternative?
+            add("title");
+            add("journal");
+            add("year");
+        }});
+        put(RecordType.BOOK, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("publisher");
+            add("year");
+        }});
+        put(RecordType.INPROCEEDINGS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("year");
+        }});
+        put(RecordType.CONFERENCE, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("year");
+        }});
+        put(RecordType.BOOKLET, new HashSet<String>(){{
+            add("title");
+        }});
+        put(RecordType.INBOOK, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("chapter");
+            add("publisher");
+            add("year");
+        }});
+        put(RecordType.INCOLLECTION, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("publisher");
+            add("year");
+        }});
+        put(RecordType.MANUAL, new HashSet<String>(){{
+            add("title");
+        }});
+        put(RecordType.MASTERSTHESIS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("school");
+            add("year");
+        }});
+        put(RecordType.PHDTHESIS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("school");
+            add("year");
+        }});
+        put(RecordType.TECHREPORT, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("institution");
+            add("year");
+        }});
+        put(RecordType.MISC, new HashSet<>());
+        put(RecordType.UNPUBLISHED, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("note");
+        }});
+    }};
+
+
     // TODO: fill these.
-    private static Map<RecordType, Set<String>> mandatoryFields;
-    private static Map<RecordType, Set<String>> optionalFields;
+    private static Map<RecordType, Set<String>> optionalFields = new HashMap<RecordType, Set<String>>() {{
+        put(RecordType.ARTICLE, new HashSet<String>(){{
+            add("volume");
+            add("number");
+            add("pages");
+            add("month");
+            add("note");
+            add("key");
+        }});
+        put(RecordType.BOOK, new HashSet<String>(){{
+            add("volume");
+            add("series");
+            add("address");
+            add("edition");
+            add("month");
+            add("note");
+            add("key");
+        }});
+        put(RecordType.INPROCEEDINGS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("year");
+        }});
+        put(RecordType.CONFERENCE, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("year");
+        }});
+        put(RecordType.BOOKLET, new HashSet<String>(){{
+            add("title");
+        }});
+        put(RecordType.INBOOK, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("chapter");
+            add("publisher");
+            add("year");
+        }});
+        put(RecordType.INCOLLECTION, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("booktitle");
+            add("publisher");
+            add("year");
+        }});
+        put(RecordType.MANUAL, new HashSet<String>(){{
+            add("title");
+        }});
+        put(RecordType.MASTERSTHESIS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("school");
+            add("year");
+        }});
+        put(RecordType.PHDTHESIS, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("school");
+            add("year");
+        }});
+        put(RecordType.TECHREPORT, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("institution");
+            add("year");
+        }});
+        put(RecordType.MISC, new HashSet<>());
+        put(RecordType.UNPUBLISHED, new HashSet<String>(){{
+            add("author");
+            add("title");
+            add("note");
+        }});
+    }};;
 
     private Map<String, String> stringVars;
 
@@ -23,20 +169,13 @@ public class RecordParser {
     }
 
     public Record parseRecord(String category, String recordContent) throws ParseException {
-        Record record = new Record();
-        /* Type of the record is known already. */
-        // TODO: use constructor
-        record.setType(RecordType.valueOf(category));
-
         String foundKey = parseKey(recordContent);
         String foundAuthor = parseAuthor(recordContent);
         Map<String, String> foundFields = parseFields(recordContent);
+        Author author = new Author("", foundAuthor, "", "");
 
         // TODO: check if we have mandatory fields - only then return, otherwise WARNING - throw ParseException.
-        System.out.println(foundKey);
-        System.out.println(foundAuthor);
-
-        return record;
+        return new Record(RecordType.valueOf(category), foundKey, author, foundFields);
     }
 
     /**
@@ -60,7 +199,7 @@ public class RecordParser {
      * @param recordContent String with record contents
      * @return map describing encountered fields
      */
-    private Map<String, String> parseFields(String recordContent) throws ParseException {
+    private Map<String, String> parseFields(String recordContent) {
         Map<String, String> fields = new HashMap<>();
         Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|]+),");
         Matcher fieldMatcher = fieldPattern.matcher(recordContent);

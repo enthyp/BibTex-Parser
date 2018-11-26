@@ -28,4 +28,21 @@ public class Author {
     public String getJr() {
         return jr;
     }
+
+    @Override
+    public String toString() {
+        if (jr != null) {
+            if (von != null) {
+                return String.format("%s %s, %s, %s", von, last, jr, first);
+            } else {
+                return String.format("%s, %s, %s", last, jr, first);
+            }
+        } else {
+            if (von != null) {
+                return String.format("%s %s %s", first, von, last);
+            } else {
+                return String.format("%s %s",first, last);
+            }
+        }
+    }
 }

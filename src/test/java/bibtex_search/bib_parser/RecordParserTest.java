@@ -22,7 +22,6 @@ public class RecordParserTest {
                     .collect(Collectors.joining("\n"));
 
         RecordParser recordParser = new RecordParser(new HashMap<>());
-
-        recordParser.parseRecord("MISC", fileContent);
+        System.out.println(recordParser.parseRecord("MISC", fileContent));
     }
 }
