@@ -1,7 +1,8 @@
 package bibtex_search.bib_parser;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FieldParser {
 
@@ -12,8 +13,15 @@ public class FieldParser {
     }
 
     public Pair parse(String fieldContent) {
-        Pair field = new Pair("bob", "mob");
+        // TODO: add stringVar handling!!!
+        Pattern fieldPattern = Pattern.compile("(?<name>\\w+)\\s=\\s\"(?<value>[^,|\"]+)\"");
+        Matcher fieldMatcher = fieldPattern.matcher(fieldContent);
 
-        return field;
+        if (fieldMatcher.find()) {
+            return new Pair(fieldMatcher.group("name"), fieldMatcher.group("value"));
+        }
+
+        /* No exception is thrown. */
+        return null;
     }
 }

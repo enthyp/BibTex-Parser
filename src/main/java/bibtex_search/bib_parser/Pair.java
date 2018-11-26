@@ -17,4 +17,12 @@ public class Pair {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

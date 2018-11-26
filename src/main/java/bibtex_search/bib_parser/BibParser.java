@@ -6,6 +6,7 @@ import bibtex_search.bib_parser.record.RecordType;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +50,7 @@ public class BibParser {
             /* Match all String and Record blocks. */
             Matcher recordMatcher = match(fileContent);
 
+            /* TODO: handle parsing errors. */
             while (recordMatcher.find()) {
                 String category = recordMatcher.group("category");
                 String content = recordMatcher.group("content");
@@ -74,11 +76,13 @@ public class BibParser {
      */
     private void parseRecord(String category, String recordContent) {
         RecordParser recordParser = new RecordParser(stringVars);
-        // TODO: throw exception if e.g. mandatory fields not provided etc.
-        Record result = recordParser.parseRecord(category, recordContent);
-
-        /* Only adds new entries. */
-        //records.add(result);
+        try {
+            Record result = recordParser.parseRecord(category, recordContent);
+            /* Only adds new entries. */
+            //records.add(result);
+        } catch (ParseException e) {
+            System.out.println("WARNING: " + e.getMessage());
+        }
     }
 
     /**
