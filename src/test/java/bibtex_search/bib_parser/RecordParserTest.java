@@ -21,7 +21,9 @@ public class RecordParserTest {
         String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                     .collect(Collectors.joining("\n"));
 
-        RecordParser recordParser = new RecordParser(new HashMap<>());
+        RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
+            put("var1", "mofo as fuck");
+        }});
         System.out.println(recordParser.parseRecord("MISC", fileContent));
     }
 }

@@ -34,6 +34,7 @@ public class Main {
      * @return command line arguments parsing results
      */
     public static CommandLine parseArguments(String[] args) {
+        // TODO: add option to suppress warnings!!!
         Option filePath = Option.builder("f")
                 .longOpt("filepath")
                 .hasArg()

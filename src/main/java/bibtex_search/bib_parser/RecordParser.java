@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RecordParser {
     private static Map<RecordType, Set<String>> mandatoryFields = new HashMap<RecordType, Set<String>>() {{
@@ -85,7 +86,6 @@ public class RecordParser {
     }};
 
 
-    // TODO: fill these.
     private static Map<RecordType, Set<String>> optionalFields = new HashMap<RecordType, Set<String>>() {{
         put(RecordType.ARTICLE, new HashSet<String>(){{
             add("volume");
@@ -105,62 +105,111 @@ public class RecordParser {
             add("key");
         }});
         put(RecordType.INPROCEEDINGS, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("booktitle");
-            add("year");
+            add("editor");
+            add("volume");
+            add("series");
+            add("pages");
+            add("address");
+            add("month");
+            add("organization");
+            add("publisher");
+            add("note");
+            add("key");
         }});
         put(RecordType.CONFERENCE, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("booktitle");
-            add("year");
+            add("editor");
+            add("volume");
+            add("series");
+            add("pages");
+            add("address");
+            add("month");
+            add("organization");
+            add("publisher");
+            add("note");
+            add("key");
         }});
         put(RecordType.BOOKLET, new HashSet<String>(){{
-            add("title");
+            add("author");
+            add("howpublished");
+            add("address");
+            add("month");
+            add("year");
+            add("note");
+            add("key");
         }});
         put(RecordType.INBOOK, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("chapter");
-            add("publisher");
-            add("year");
+            add("volume");
+            add("series");
+            add("type");
+            add("address");
+            add("edition");
+            add("month");
+            add("note");
+            add("key");
         }});
         put(RecordType.INCOLLECTION, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("booktitle");
-            add("publisher");
-            add("year");
+            add("editor");
+            add("volume");
+            add("series");
+            add("type");
+            add("chapter");
+            add("pages");
+            add("address");
+            add("edition");
+            add("month");
+            add("note");
+            add("key");
         }});
         put(RecordType.MANUAL, new HashSet<String>(){{
-            add("title");
+            add("author");
+            add("organization");
+            add("address");
+            add("edition");
+            add("month");
+            add("year");
+            add("note");
+            add("key");
         }});
         put(RecordType.MASTERSTHESIS, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("school");
-            add("year");
+            add("type");
+            add("address");
+            add("month");
+            add("note");
+            add("key");
         }});
         put(RecordType.PHDTHESIS, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("school");
-            add("year");
+            add("type");
+            add("address");
+            add("month");
+            add("note");
+            add("key");
         }});
         put(RecordType.TECHREPORT, new HashSet<String>(){{
-            add("author");
-            add("title");
-            add("institution");
-            add("year");
-        }});
-        put(RecordType.MISC, new HashSet<>());
-        put(RecordType.UNPUBLISHED, new HashSet<String>(){{
-            add("author");
-            add("title");
+            add("editor");
+            add("volume");
+            add("series");
+            add("address");
+            add("month");
+            add("organization");
+            add("publisher");
             add("note");
+            add("key");
         }});
-    }};;
+        put(RecordType.MISC, new HashSet<String>(){{
+                add("author");
+                add("title");
+                add("howpublished");
+                add("month");
+                add("year");
+                add("note");
+                add("key");
+        }});
+        put(RecordType.UNPUBLISHED, new HashSet<String>(){{
+            add("month");
+            add("year");
+            add("key");
+        }});
+    }};
 
     private Map<String, String> stringVars;
 
@@ -174,7 +223,26 @@ public class RecordParser {
         Map<String, String> foundFields = parseFields(recordContent);
         Author author = new Author("", foundAuthor, "", "");
 
-        // TODO: check if we have mandatory fields - only then return, otherwise WARNING - throw ParseException.
+        /* Check for mandatory and ignored fields. */
+        Set<String> mandatory =  new HashSet<>(mandatoryFields.get(RecordType.valueOf(category)));
+        Set<String> optional = new HashSet<>(optionalFields.get(RecordType.valueOf(category)));
+        Set<String> found = foundFields.keySet();
+
+        mandatory.removeAll(found);
+        if (mandatory.isEmpty()) {
+            /* All mandatory fields were found - ignore non-mandatory nor optional. */
+            Set<String> admissible = optional;
+            admissible.addAll(mandatory);
+            found.retainAll(admissible);
+
+            /* Remove non-admissible fields. */
+            foundFields.entrySet().removeIf(field -> !found.contains(field.getKey()));
+        } else {
+            /* Report a faulty record. */
+            throw new ParseException("Record lacks mandatory fields: " +
+                    mandatory.stream().collect(Collectors.joining(", ")), -1);
+        }
+
         return new Record(RecordType.valueOf(category), foundKey, author, foundFields);
     }
 
@@ -190,7 +258,7 @@ public class RecordParser {
         if (keyMatcher.find()) {
             return keyMatcher.group("key");
         } else {
-            throw new ParseException("Error parsing record's key!", -1);
+            throw new ParseException("Error parsing record's key!\nFaulty record:\n" + recordContent + "\n", -1);
         }
     }
 
@@ -207,8 +275,12 @@ public class RecordParser {
         while (fieldMatcher.find()) {
             FieldParser fieldParser = new FieldParser(stringVars);
             /* trim() to get rid of trailing whitespace. */
-            Pair result = fieldParser.parse(fieldMatcher.group("field").trim());
-            System.out.println(result);
+            try {
+                Pair result = fieldParser.parse(fieldMatcher.group("field").trim());
+                fields.put(result.getName(), result.getValue());
+            } catch (ParseException e) {
+                System.out.println("WARNING: " + e.getMessage());
+            }
         }
 
         return fields;

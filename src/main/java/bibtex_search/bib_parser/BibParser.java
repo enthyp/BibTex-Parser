@@ -91,7 +91,11 @@ public class BibParser {
      */
     private void parseStringVar(String varContent) {
         StringVarParser varParser = new StringVarParser(stringVars);
-        Pair stringVar = varParser.parse(varContent);
+        try {
+            Pair stringVar = varParser.parse(varContent);
+        } catch (ParseException e) {
+            System.out.println("WARNING: " + e.getMessage());
+        }
 
         /* Old variable value (if present) is replaced. */
         //stringVars.put(stringVar.getName(), stringVar.getValue());

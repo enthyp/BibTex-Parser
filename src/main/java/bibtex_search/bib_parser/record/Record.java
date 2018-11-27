@@ -113,8 +113,4 @@ public class Record {
     public void addField(String name, String value) {
         fields.put(name, value);
     }
-
-    // TODO: implement equals() and hashCode() - necessary to keep these in a Set.
-    // TODO: implement toString() - in a way specified by the instructor.
-
 }
