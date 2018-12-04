@@ -39,8 +39,8 @@ public class FieldParser {
                 output.append(word);
             } else {
                 /* Named variable encountered. */
-                if (stringVars.containsKey(word))
-                    output.append(stringVars.get(word));
+                if (stringVars.containsKey(word.toUpperCase()))
+                    output.append(stringVars.get(word.toUpperCase()));
                 else
                     System.out.println(String.format("WARNING: Variable %s not found!", word));
             }

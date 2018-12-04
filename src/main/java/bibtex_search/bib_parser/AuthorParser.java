@@ -3,6 +3,7 @@ package bibtex_search.bib_parser;
 import bibtex_search.bib_parser.record.Author;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class AuthorParser {
     }
 
     private Author parse1st(String authorData) throws ParseException {
-        String[] words = authorData.split("\\s+");
+        String[] words = splitIntoWords(authorData);
 
         /* Determine the first part. */
         int fst = 0; // fst will eventually hold the number of the last word of the first part.
@@ -64,7 +65,7 @@ public class AuthorParser {
         String vonLastBlock = blocks[0];
         String first = blocks[1];
 
-        String[] vonLastWords = vonLastBlock.split("\\s+");
+        String[] vonLastWords = splitIntoWords(vonLastBlock);
 
         /* Determine the first part. */
         int i = 0, fst = 0; // fst will eventually hold the number of the last word of the first part.
@@ -92,7 +93,7 @@ public class AuthorParser {
         String jr = blocks[1];
         String first = blocks[2];
 
-        String[] vonLastWords = vonLastBlock.split("\\s+");
+        String[] vonLastWords = splitIntoWords(vonLastBlock);
 
         /* Determine the first part. */
         int i = 0, fst = 0; // fst will eventually hold the number of the last word of the first part.
@@ -116,13 +117,31 @@ public class AuthorParser {
 
     /**
      *
+     * @param text sequence of characters we want to split into words in BibTex manner
+     * @return array of words
+     */
+    private String[] splitIntoWords(String text) throws ParseException {
+        ArrayList<String> words = new ArrayList<>();
+        for (int position = 0; position < text.length();) {
+            int wordEnd = passWord(text, position);
+            words.add(text.substring(position, wordEnd));
+            position = wordEnd;
+            while (position < text.length() && Character.isWhitespace(text.charAt(position)))
+                position++;
+        }
+
+        return words.toArray(new String[0]);
+    }
+
+    /**
+     *
      * @param text sequence of characters we want to divide into words
-     * @param start starting position of word in the text (non-whitespace character)
-     * @return starting position of the next word in the text
+     * @param start starting position of a word in the text (non-whitespace character)
+     * @return last position of a word in the text + 1
      */
     private int passWord(String text, int start) throws ParseException {
         int i = start;
-        
+
         while (i < text.length() && !Character.isWhitespace(text.charAt(i))) {
             // Eat balanced brackets block.
             if (text.charAt(i) == '[') {
@@ -142,9 +161,6 @@ public class AuthorParser {
             }
             i++;
         }
-
-        while (i < text.length() && Character.isWhitespace(text.charAt(i)))
-            i++;
 
         return i;
     }

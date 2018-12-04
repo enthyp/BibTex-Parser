@@ -219,14 +219,15 @@ public class RecordParser {
 
     public Record parseRecord(String category, String recordContent) throws ParseException {
         String foundKey = parseKey(recordContent);
-        String foundAuthor = parseAuthor(recordContent);
+        Author foundAuthor = parseAuthor(recordContent);
         Map<String, String> foundFields = parseFields(recordContent);
-        Author author = new Author("", foundAuthor, "", "");
 
         /* Check for mandatory and ignored fields. */
         Set<String> mandatory =  new HashSet<>(mandatoryFields.get(RecordType.valueOf(category)));
         Set<String> optional = new HashSet<>(optionalFields.get(RecordType.valueOf(category)));
-        Set<String> found = foundFields.keySet();
+        HashSet<String> found = new HashSet<>(foundFields.keySet());
+        if (foundAuthor != null)
+            found.add("author");
 
         mandatory.removeAll(found);
         if (mandatory.isEmpty()) {
@@ -243,7 +244,7 @@ public class RecordParser {
                     mandatory.stream().collect(Collectors.joining(", ")), -1);
         }
 
-        return new Record(RecordType.valueOf(category), foundKey, author, foundFields);
+        return new Record(RecordType.valueOf(category), foundKey, foundAuthor, foundFields);
     }
 
     /**
@@ -269,7 +270,8 @@ public class RecordParser {
      */
     private Map<String, String> parseFields(String recordContent) {
         Map<String, String> fields = new HashMap<>();
-        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|]+),");
+        //Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|]+),");
+        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|=]+\\s=\\s[^,|]+),");
         Matcher fieldMatcher = fieldPattern.matcher(recordContent);
 
         while (fieldMatcher.find()) {
@@ -289,14 +291,19 @@ public class RecordParser {
     /**
      *
      * @param recordContent String with record contents
-     * @return String with author personal data (TODO: change to Author instance)
+     * @return String with author personal data
      */
-    private String parseAuthor(String recordContent) {
-        Pattern keyPattern = Pattern.compile("author\\s=\\s\"(?<author>[^\",|]+)\"\\|");
+    private Author parseAuthor(String recordContent) {
+        Pattern keyPattern = Pattern.compile("author\\s=\\s\"(?<author>[^|]+)\"\\|");
         Matcher keyMatcher = keyPattern.matcher(recordContent);
 
         if (keyMatcher.find()) {
-            return keyMatcher.group("author");
+            AuthorParser authorParser = new AuthorParser();
+            try {
+                return authorParser.parse(keyMatcher.group("author").trim());
+            } catch (ParseException e) {
+                System.out.println("WARNING: " + e.getMessage());
+            }
         }
 
         /* No exception is thrown - there may be no author */

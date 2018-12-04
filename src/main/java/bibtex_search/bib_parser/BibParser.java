@@ -64,6 +64,10 @@ public class BibParser {
                     parseStringVar(content);
                 }
             }
+
+            // TODO: pass to Index
+            for (Record record : records)
+                System.out.println(record);
         }
     }
 
@@ -79,7 +83,7 @@ public class BibParser {
         try {
             Record result = recordParser.parseRecord(category, recordContent);
             /* Only adds new entries. */
-            //records.add(result);
+            records.add(result);
         } catch (ParseException e) {
             System.out.println("WARNING: " + e.getMessage());
         }
@@ -90,16 +94,14 @@ public class BibParser {
      * @param varContent String containing variable definition
      */
     private void parseStringVar(String varContent) {
-        StringVarParser varParser = new StringVarParser(stringVars);
+        FieldParser varParser = new FieldParser(stringVars);
         try {
             Pair stringVar = varParser.parse(varContent);
+            System.out.println("WZIUM: " + stringVar.getName());
+            stringVars.put(stringVar.getName().toUpperCase(), stringVar.getValue());
         } catch (ParseException e) {
             System.out.println("WARNING: " + e.getMessage());
         }
-
-        /* Old variable value (if present) is replaced. */
-        //stringVars.put(stringVar.getName(), stringVar.getValue());
-        System.out.println(varContent);
     }
 
     /**

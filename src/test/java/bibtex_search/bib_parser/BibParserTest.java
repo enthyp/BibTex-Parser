@@ -1,6 +1,5 @@
 package bibtex_search.bib_parser;
 
-import bibtex_search.bib_parser.record.RecordType;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,4 +15,7 @@ public class BibParserTest {
         BibParser bibParser = new BibParser();
         bibParser.parseFile(file);
     }
+
+    // TODO: error messages should pinpoint the fault exactly (line in file..?)
+    // IDEA: pass the line number or interval down to the parser - so that it can print out appropriate error
 }

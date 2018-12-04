@@ -31,18 +31,22 @@ public class Author {
 
     @Override
     public String toString() {
-        if (jr != null) {
-            if (von != null) {
+        if (!jr.equals("")) {
+            if (!von.equals("")) {
                 return String.format("%s %s, %s, %s", von, last, jr, first);
             } else {
                 return String.format("%s, %s, %s", last, jr, first);
             }
         } else {
-            if (von != null) {
+            if (!von.equals("")) {
                 return String.format("%s %s %s", first, von, last);
             } else {
                 return String.format("%s %s",first, last);
             }
         }
+    }
+
+    public String contentString() {
+        return String.format("First: %s\nvon: %s\nLast: %s\njr: %s", first, von, last, jr);
     }
 }
