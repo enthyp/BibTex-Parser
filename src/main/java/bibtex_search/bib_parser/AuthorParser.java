@@ -14,7 +14,7 @@ public class AuthorParser {
     }
 
     public Author parse(String authorData) throws ParseException {
-        int commaCount = authorData.split(",").length - 1;
+        int commaCount = authorData.split(",", -1).length - 1;
         Author author;
 
         switch(commaCount) {
@@ -57,11 +57,15 @@ public class AuthorParser {
             von = Arrays.stream(Arrays.copyOfRange(words, fst, snd)).collect(Collectors.joining(" "));
         last = Arrays.stream(Arrays.copyOfRange(words, snd, words.length)).collect(Collectors.joining(" "));
 
+        first = first.replaceAll("^\\s+|\\s+$", "");
+        von = von.replaceAll("^\\s+|\\s+$", "");
+        last = last.replaceAll("^\\s+|\\s+$", "");
+
         return new Author(first, last, von, "");
     }
 
     private Author parse2nd(String authorData) throws ParseException {
-        String[] blocks = authorData.split(",");
+        String[] blocks = authorData.split(",", -1);
         String vonLastBlock = blocks[0];
         String first = blocks[1];
 
@@ -84,11 +88,15 @@ public class AuthorParser {
         last = Arrays.stream(Arrays.copyOfRange(vonLastWords, fst, vonLastWords.length))
                 .collect(Collectors.joining(" "));
 
+        first = first.replaceAll("^\\s+|\\s+$", "");
+        von = von.replaceAll("^\\s+|\\s+$", "");
+        last = last.replaceAll("^\\s+|\\s+$", "");
+
         return new Author(first, last, von, "");
     }
 
     private Author parse3rd(String authorData) throws ParseException {
-        String[] blocks = authorData.split(",");
+        String[] blocks = authorData.split(",", -1);
         String vonLastBlock = blocks[0];
         String jr = blocks[1];
         String first = blocks[2];
@@ -112,6 +120,11 @@ public class AuthorParser {
         last = Arrays.stream(Arrays.copyOfRange(vonLastWords, fst, vonLastWords.length))
                 .collect(Collectors.joining(" "));
 
+        first = first.replaceAll("^\\s+|\\s+$", "");
+        von = von.replaceAll("^\\s+|\\s+$", "");
+        last = last.replaceAll("^\\s+|\\s+$", "");
+        jr = jr.replaceAll("^\\s+|\\s$", "");
+
         return new Author(first, last, von, jr);
     }
 
@@ -120,7 +133,7 @@ public class AuthorParser {
      * @param text sequence of characters we want to split into words in BibTex manner
      * @return array of words
      */
-    private String[] splitIntoWords(String text) throws ParseException {
+    public String[] splitIntoWords(String text) throws ParseException {
         ArrayList<String> words = new ArrayList<>();
         for (int position = 0; position < text.length();) {
             int wordEnd = passWord(text, position);
@@ -191,8 +204,6 @@ public class AuthorParser {
                 }
             } else if (Character.isLetter(c)) {
                 return Character.isUpperCase(c) ? Case.UPPER : Case.LOWER;
-            } else if (Character.isDigit(c)) {
-                return Case.LOWER;
             }
         }
 
