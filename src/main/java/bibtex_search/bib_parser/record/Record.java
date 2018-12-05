@@ -1,17 +1,27 @@
 package bibtex_search.bib_parser.record;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 public class Record {
     private RecordType type;
     private String key;
-    private Author author;
+    private HashSet<Author> authors;
     private Map<String, String> fields;
+
+    public Record(RecordType type, String key, HashSet<Author> authors, Map<String, String> fields) {
+        this.type = type;
+        this.key = key;
+        this.authors = authors;
+        this.fields = fields;
+    }
 
     public Record(RecordType type, String key, Author author, Map<String, String> fields) {
         this.type = type;
         this.key = key;
-        this.author = author;
+        this.authors = new HashSet<>();
+        this.authors.add(author);
         this.fields = fields;
     }
 
@@ -51,10 +61,17 @@ public class Record {
             output.append("*");
         output.append("\n");
 
-        /* Author row. */
-        if (author != null) {
+        /* Author rows. */
+        if (authors != null) {
+            Iterator<Author> it = authors.iterator();
             output.append(String.format("* %1$-" + width_left + "s* ", "author"));
-            output.append(String.format("%1$-" + width_right + "s*\n", author));
+            output.append(String.format("%1$-" + width_right + "s*\n", it.next()));
+
+            while (it.hasNext()) {
+                Author nextAuthor = it.next();
+                output.append(String.format("* %1$-" + width_left + "s* ", ""));
+                output.append(String.format("%1$-" + width_right + "s*\n", nextAuthor));
+            }
 
             for (int i = 0; i < width_total; i++)
                 output.append("*");
@@ -62,7 +79,6 @@ public class Record {
         }
 
         /* Next rows. */
-        // TODO: authors must be done separately.
         for (Map.Entry<String, String> entry: fields.entrySet()) {
             output.append(String.format("* %1$-" + width_left + "s* ", entry.getKey()));
             output.append(String.format("%1$-" + width_right + "s*\n", entry.getValue()));
@@ -93,12 +109,12 @@ public class Record {
         this.key = key;
     }
 
-    public Author getAuthor() {
-        return author;
+    public HashSet<Author> getAuthor() {
+        return authors;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthor(HashSet<Author> authors) {
+        this.authors = authors;
     }
 
     public Map<String, String> getFields() {

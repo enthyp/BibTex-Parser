@@ -22,7 +22,7 @@ public class RecordParserTest {
                     .collect(Collectors.joining("\n"));
 
         RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
-            put("var1", "mofo as fuck");
+            put("VAR1", "wazzup ");
         }});
         System.out.println(recordParser.parseRecord("MISC", fileContent));
     }

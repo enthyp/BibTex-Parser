@@ -3,6 +3,7 @@ package bibtex_search.bib_parser.record;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static org.junit.Assert.*;

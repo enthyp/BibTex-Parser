@@ -5,10 +5,7 @@ import bibtex_search.bib_parser.record.Record;
 import bibtex_search.bib_parser.record.RecordType;
 
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -219,14 +216,14 @@ public class RecordParser {
 
     public Record parseRecord(String category, String recordContent) throws ParseException {
         String foundKey = parseKey(recordContent);
-        Author foundAuthor = parseAuthor(recordContent);
+        HashSet<Author> foundAuthors = parseAuthor(recordContent);
         Map<String, String> foundFields = parseFields(recordContent);
 
         /* Check for mandatory and ignored fields. */
         Set<String> mandatory =  new HashSet<>(mandatoryFields.get(RecordType.valueOf(category)));
         Set<String> optional = new HashSet<>(optionalFields.get(RecordType.valueOf(category)));
         HashSet<String> found = new HashSet<>(foundFields.keySet());
-        if (foundAuthor != null)
+        if (foundAuthors != null)
             found.add("author");
 
         mandatory.removeAll(found);
@@ -244,7 +241,7 @@ public class RecordParser {
                     mandatory.stream().collect(Collectors.joining(", ")), -1);
         }
 
-        return new Record(RecordType.valueOf(category), foundKey, foundAuthor, foundFields);
+        return new Record(RecordType.valueOf(category), foundKey, foundAuthors, foundFields);
     }
 
     /**
@@ -291,16 +288,36 @@ public class RecordParser {
     /**
      *
      * @param recordContent String with record contents
-     * @return String with author personal data
+     * @return personal data of all found authors
      */
-    private Author parseAuthor(String recordContent) {
+    private HashSet<Author> parseAuthor(String recordContent) {
         Pattern keyPattern = Pattern.compile("author\\s=\\s\"(?<author>[^|]+)\"\\|");
         Matcher keyMatcher = keyPattern.matcher(recordContent);
 
         if (keyMatcher.find()) {
             AuthorParser authorParser = new AuthorParser();
             try {
-                return authorParser.parse(keyMatcher.group("author").trim());
+                String authorsString = keyMatcher.group("author").trim();
+                HashSet<Author> result = new HashSet<>();
+                String[] words = authorParser.splitIntoWords(authorsString);
+
+                /* Split on and into multiple authors. */
+                for (int i = 0; i < words.length; i++) {
+                    int j = i;
+                    while (j < words.length && !words[j].equals("and"))
+                        j++;
+
+                    if (i < j) {
+                        String authorString = Arrays.stream(Arrays.copyOfRange(words, i, j))
+                                .collect(Collectors.joining(" "));
+                        Author author = authorParser.parse(authorString);
+                        result.add(author);
+                    }
+
+                    i = j;
+                }
+
+                return result;
             } catch (ParseException e) {
                 System.out.println("WARNING: " + e.getMessage());
             }

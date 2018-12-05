@@ -16,6 +16,9 @@ public class BibParserTest {
         bibParser.parseFile(file);
     }
 
-    // TODO: error messages should pinpoint the fault exactly (line in file..?)
+    // TODO: error messages should pinpoint the fault exactly (line in file..?) (do 2nd)
     // IDEA: pass the line number or interval down to the parser - so that it can print out appropriate error
+    // there should be a wrapper class for the return types or for arguments - so that we can either pass
+    // up the information about a problem (a warning, not an exception) or pass down the information about
+    // current position in the text - so that exact information can be printed out.
 }
