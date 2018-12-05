@@ -1,12 +1,13 @@
 package bibtex_search.bib_parser.record;
 
-public class Author {
+public class Person {
+    private String type = "author";
     private String first;
     private String last;
     private String von;
     private String jr;
 
-    public Author(String first, String last, String von, String jr) {
+    public Person(String first, String last, String von, String jr) {
         this.first = first;
         this.last = last;
         this.von = von;
@@ -28,6 +29,10 @@ public class Author {
     public String getJr() {
         return jr;
     }
+
+    public String getType() { return type; }
+
+    public void setType(String type) { this.type = type; }
 
     @Override
     public String toString() {

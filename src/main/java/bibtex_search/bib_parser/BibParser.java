@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class BibParser extends Parser {
 
-    private Set<Record> records = new HashSet<>();
+    private Set<Record> records = new LinkedHashSet<>();
 
     private Map<String, String> stringVars = new HashMap<>();
 
@@ -52,7 +52,6 @@ public class BibParser extends Parser {
         /* Match all String and Record blocks. */
         Matcher recordMatcher = match(fileContent);
 
-        /* TODO: handle parsing errors. */
         while (recordMatcher.find()) {
             String category = recordMatcher.group("category");
             String content = recordMatcher.group("content");

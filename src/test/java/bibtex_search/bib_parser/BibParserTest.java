@@ -28,11 +28,12 @@ public class BibParserTest {
     // there should be a wrapper class for the return types or for arguments - so that we can either pass
     // up the information about a problem (a warning, not an exception) or pass down the information about
     // current position in the text - so that exact information can be printed out.
+    // TODO: test it!!!
+    // TODO: all case vs caseless, like Person = author and so on!
 
     @Test
     public void lineEndIndexTest() throws IOException {
-        // TODO: use matcher.start(), matcher.end()
-        String fileName = "/xampl_simplified.bib";
+        String fileName = "/xampl_record1.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
 
         /* Read all of file contents to file. */
@@ -51,9 +52,9 @@ public class BibParserTest {
             }
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            br.skip(10347);
-            System.out.println(Character.toChars(br.read()));
-        }
+//        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+//            br.skip(10347);
+//            System.out.println(Character.toChars(br.read()));
+//        }
     }
 }

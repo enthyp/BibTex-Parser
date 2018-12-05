@@ -1,5 +1,6 @@
 package bibtex_search.bib_parser;
 
+import bibtex_search.bib_parser.record.RecordType;
 import org.junit.Test;
 
 import java.io.File;

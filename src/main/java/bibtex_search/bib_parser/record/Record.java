@@ -1,27 +1,28 @@
 package bibtex_search.bib_parser.record;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Record {
     private RecordType type;
     private String key;
-    private HashSet<Author> authors;
+    private Map<String, Set<Person>> people;
     private Map<String, String> fields;
 
-    public Record(RecordType type, String key, HashSet<Author> authors, Map<String, String> fields) {
+    public Record(RecordType type, String key, Map<String, Set<Person>> people, Map<String, String> fields) {
         this.type = type;
         this.key = key;
-        this.authors = authors;
+        this.people = people;
         this.fields = fields;
     }
 
-    public Record(RecordType type, String key, Author author, Map<String, String> fields) {
+    public Record(RecordType type, String key, Person person, Map<String, String> fields) {
         this.type = type;
         this.key = key;
-        this.authors = new HashSet<>();
-        this.authors.add(author);
+        this.people = new LinkedHashMap<String, Set<Person>>() {{
+            put("author", new LinkedHashSet<Person>() {{
+                add(person);
+            }});
+        }};
         this.fields = fields;
     }
 
@@ -44,6 +45,7 @@ public class Record {
     @Override
     public String toString() {
         /* Ugly. */
+        // TODO: fixed length assumption...
         int width_left = 40;
         int width_right = 75;
         int width_total = 120;
@@ -61,21 +63,24 @@ public class Record {
             output.append("*");
         output.append("\n");
 
-        /* Author rows. */
-        if (authors != null) {
-            Iterator<Author> it = authors.iterator();
-            output.append(String.format("* %1$-" + width_left + "s* ", "author"));
-            output.append(String.format("%1$-" + width_right + "s*\n", it.next()));
+        /* People rows. */
+        if (people != null) {
+            for (Map.Entry<String, Set<Person>> peopleGroup: people.entrySet()) {
+                Iterator<Person> it = peopleGroup.getValue().iterator();
+                Person person = it.next();
+                output.append(String.format("* %1$-" + width_left + "s* ", peopleGroup.getKey()));
+                output.append(String.format("%1$-" + width_right + "s*\n", person));
 
-            while (it.hasNext()) {
-                Author nextAuthor = it.next();
-                output.append(String.format("* %1$-" + width_left + "s* ", ""));
-                output.append(String.format("%1$-" + width_right + "s*\n", nextAuthor));
+                while (it.hasNext()) {
+                    Person nextPerson = it.next();
+                    output.append(String.format("* %1$-" + width_left + "s* ", ""));
+                    output.append(String.format("%1$-" + width_right + "s*\n", nextPerson));
+                }
+
+                for (int i = 0; i < width_total; i++)
+                    output.append("*");
+                output.append("\n");
             }
-
-            for (int i = 0; i < width_total; i++)
-                output.append("*");
-            output.append("\n");
         }
 
         /* Next rows. */
@@ -108,15 +113,6 @@ public class Record {
     public void setKey(String key) {
         this.key = key;
     }
-
-    public HashSet<Author> getAuthor() {
-        return authors;
-    }
-
-    public void setAuthor(HashSet<Author> authors) {
-        this.authors = authors;
-    }
-
     public Map<String, String> getFields() {
         return fields;
     }
@@ -127,5 +123,13 @@ public class Record {
 
     public void addField(String name, String value) {
         fields.put(name, value);
+    }
+
+    public Map<String, Set<Person>> getPeople() {
+        return people;
+    }
+
+    public void setPeople(Map<String, Set<Person>> people) {
+        this.people = people;
     }
 }
