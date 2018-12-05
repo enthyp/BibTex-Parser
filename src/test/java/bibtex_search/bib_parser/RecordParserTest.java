@@ -24,6 +24,6 @@ public class RecordParserTest {
         RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
             put("VAR1", "wazzup ");
         }});
-        System.out.println(recordParser.parseRecord("MISC", fileContent));
+        System.out.println(recordParser.parseRecord("MISC", new ParseBlock(0, 0,fileContent)));
     }
 }

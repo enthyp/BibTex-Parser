@@ -7,27 +7,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class AuthorParser {
+public class AuthorParser extends Parser {
 
     private enum Case {
         UPPER, LOWER, UNDETERMINED;
     }
 
-    public Author parse(String authorData) throws ParseException {
-        int commaCount = authorData.split(",", -1).length - 1;
+    public Author parse(ParseBlock authorData) throws ParseException {
+        int commaCount = authorData.getContent().split(",", -1).length - 1;
+        String authorString = authorData.getContent();
         Author author;
 
-        switch(commaCount) {
-            case 0: author = parse1st(authorData);
+        try {
+            switch (commaCount) {
+                case 0:
+                    author = parse1st(authorString);
                     break;
 
-            case 1: author = parse2nd(authorData);
+                case 1:
+                    author = parse2nd(authorString);
                     break;
 
-            case 2: author = parse3rd(authorData);
+                case 2:
+                    author = parse3rd(authorString);
                     break;
 
-            default: throw new ParseException("Unknown author signature!", -1);
+                default:
+                    throw new ParseException("\nUnknown author signature!", -1);
+            }
+        } catch (ParseException e) {
+            throw new ParseException(String.format("Line %d\n", authorData.getLineStart()) + e.getMessage(), -1);
         }
 
         return author;

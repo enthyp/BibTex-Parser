@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FieldParser {
+public class FieldParser extends Parser {
 
     protected Map<String, String> stringVars;
 
@@ -13,22 +13,24 @@ public class FieldParser {
         this.stringVars = stringVars;
     }
 
-    public Pair parse(String fieldContent) throws ParseException {
+    public Pair parse(ParseBlock fieldContentBlock) throws ParseException {
         Pattern fieldPattern = Pattern.compile("(?<name>\\w+)\\s=\\s(?<value>[^,|]+)");
-        Matcher fieldMatcher = fieldPattern.matcher(fieldContent);
+        Matcher fieldMatcher = fieldPattern.matcher(fieldContentBlock.getContent());
 
         if (fieldMatcher.find()) {
-            String value = parseValue(fieldMatcher.group("value"));
+            String value = parseValue(new ParseBlock(fieldContentBlock.getLineStart(),
+                    fieldContentBlock.getLineEnd(), fieldMatcher.group("value")));
             return new Pair(fieldMatcher.group("name"), value);
         } else {
-            throw new ParseException("Error parsing record's field!\nFaulty field:\n" + fieldContent + "\n", -1);
+            throw new ParseException(String.format("Line %d\nError parsing record's field: %s\n\n",
+                    fieldContentBlock.getLineStart(), fieldContentBlock), -1);
         }
     }
 
-    public String parseValue(String value) {
+    public String parseValue(ParseBlock valueBlock) throws ParseException {
         StringBuilder output = new StringBuilder();
         Pattern wordPattern = Pattern.compile("(?<word>(\"[^,|\"]+\"|\\w+))(\\s#\\s(?<tail>.+))?");
-        Matcher wordMatcher = wordPattern.matcher(value);
+        Matcher wordMatcher = wordPattern.matcher(valueBlock.getContent());
 
         while (wordMatcher.find()) {
             String word = wordMatcher.group("word");
@@ -42,7 +44,8 @@ public class FieldParser {
                 if (stringVars.containsKey(word.toUpperCase()))
                     output.append(stringVars.get(word.toUpperCase()));
                 else
-                    System.out.println(String.format("WARNING: Variable %s not found!", word));
+                    throw new ParseException(String.format("Line %d\nVariable %s not found!",
+                            valueBlock.getLineStart(), word), -1);
             }
 
             if (wordMatcher.group("tail") != null) {

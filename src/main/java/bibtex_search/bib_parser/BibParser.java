@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BibParser {
+public class BibParser extends Parser {
 
     private Set<Record> records = new HashSet<>();
 
@@ -24,7 +24,7 @@ public class BibParser {
      */
     public void parse(String filePath) throws IOException {
         File file = getFile(filePath);
-        parseFile(file);
+        parse(file);
     }
 
     public Set<Record> getRecords() {
@@ -36,8 +36,8 @@ public class BibParser {
      * @param file File object for input .bib file
      * @throws IOException
      */
-    public void parseFile(File file) throws IOException {
-        String fileContent = null;
+    public void parse(File file) throws IOException {
+        String fileContent;
         try {
             /* Read all of file contents to file. */
             fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
@@ -46,29 +46,33 @@ public class BibParser {
             throw new IOException("Error reading .bib file! " + e.getMessage());
         }
 
-        if (fileContent != null) {
-            /* Match all String and Record blocks. */
-            Matcher recordMatcher = match(fileContent);
+        /* Set up line beginnings. */
+        this.setLineBeginnings(fileContent, 1);
 
-            /* TODO: handle parsing errors. */
-            while (recordMatcher.find()) {
-                String category = recordMatcher.group("category");
-                String content = recordMatcher.group("content");
+        /* Match all String and Record blocks. */
+        Matcher recordMatcher = match(fileContent);
 
-                /* Only process actual categories and String variable declarations. */
-                if (RecordType.names.contains(category)) {
-                    /* Record encountered. */
-                    parseRecord(category, content);
-                } else if (category.equals("STRING")) {
-                    /* String variable declaration encountered. */
-                    parseStringVar(content);
-                }
+        /* TODO: handle parsing errors. */
+        while (recordMatcher.find()) {
+            String category = recordMatcher.group("category");
+            String content = recordMatcher.group("content");
+            int recordStart = this.getLineNumber(recordMatcher.start());
+            int recordEnd = this.getLineNumber(recordMatcher.end() - 1);
+            ParseBlock contentBlock = new ParseBlock(recordStart, recordEnd, content);
+
+            /* Only process actual categories and String variable declarations. */
+            if (RecordType.names.contains(category)) {
+                /* Record encountered. */
+                parseRecord(category, contentBlock);
+            } else if (category.equals("STRING")) {
+                /* String variable declaration encountered. */
+                parseStringVar(contentBlock);
             }
-
-            // TODO: pass to Index
-            for (Record record : records)
-                System.out.println(record);
         }
+
+        // TODO: pass to Index
+        for (Record record : records)
+            System.out.println(record);
     }
 
     /* --------------------------- PRIVATES ---------------------------- */
@@ -76,12 +80,13 @@ public class BibParser {
     /**
      *
      * @param category String naming the record category
-     * @param recordContent String containing contents of the record
+     * @param recordBlock contains contents of the record and its position
      */
-    private void parseRecord(String category, String recordContent) {
+    private void parseRecord(String category, ParseBlock recordBlock) {
         RecordParser recordParser = new RecordParser(stringVars);
+        recordParser.setLineBeginnings(recordBlock.getContent(), recordBlock.getLineStart());
         try {
-            Record result = recordParser.parseRecord(category, recordContent);
+            Record result = recordParser.parseRecord(category, recordBlock);
             /* Only adds new entries. */
             records.add(result);
         } catch (ParseException e) {
@@ -91,14 +96,14 @@ public class BibParser {
 
     /**
      *
-     * @param varContent String containing variable definition
+     * @param varBlock contains variable definition
      */
-    private void parseStringVar(String varContent) {
+    private void parseStringVar(ParseBlock varBlock) {
         FieldParser varParser = new FieldParser(stringVars);
+        varParser.setLineBeginnings(varBlock.getContent(), varBlock.getLineStart());
         try {
-            Pair stringVar = varParser.parse(varContent);
-            System.out.println("WZIUM: " + stringVar.getName());
-            stringVars.put(stringVar.getName().toUpperCase(), stringVar.getValue());
+            Pair stringVar = varParser.parse(varBlock);
+            stringVars.put(stringVar.getFirst().toUpperCase(), stringVar.getSecond());
         } catch (ParseException e) {
             System.out.println("WARNING: " + e.getMessage());
         }

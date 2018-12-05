@@ -1,28 +1,27 @@
 package bibtex_search.bib_parser;
 
 public class Pair {
-    private String name;
-    private String value;
+    private String first;
+    private String second;
 
-    public Pair(String name, String value) {
-        this.name = name;
-        this.value = value;
+    public Pair(String first, String second) {
+        this.first = first;
+        this.second = second;
     }
 
-
-    public String getName() {
-        return name;
+    public String getFirst() {
+        return first;
     }
 
-    public String getValue() {
-        return value;
+    public String getSecond() {
+        return second;
     }
 
     @Override
     public String toString() {
         return "Pair{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
+                "first='" + first + '\'' +
+                ", second='" + second + '\'' +
                 '}';
     }
 }

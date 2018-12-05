@@ -25,6 +25,6 @@ public class FieldParserTest {
         FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
             put("var1", "mofo as fuck");
         }});
-        System.out.println(fieldParser.parse(fileContent));
+        System.out.println(fieldParser.parse(new ParseBlock(0, 0, fileContent)));
     }
 }

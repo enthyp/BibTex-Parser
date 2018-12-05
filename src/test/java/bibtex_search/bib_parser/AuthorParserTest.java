@@ -44,7 +44,7 @@ public class AuthorParserTest {
 
             int j = 1;
             while ((lines[0] = readers[0].readLine()) != null) {
-                Author author = authorParser.parse(lines[0]);
+                Author author = authorParser.parse(new ParseBlock(0, 0, lines[0]));
                 for (int i = 1; i < lines.length; i++)
                     lines[i] = readers[i].readLine()
                             .replaceAll("^\\s+|\\s+$", "")
