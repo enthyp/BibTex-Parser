@@ -49,6 +49,7 @@ public class Record {
         int width_left = 40;
         int width_right = 75;
         int width_total = 120;
+
         StringBuilder output = new StringBuilder();
 
         output.append("RECORD:\n");
@@ -85,8 +86,33 @@ public class Record {
 
         /* Next rows. */
         for (Map.Entry<String, String> entry: fields.entrySet()) {
-            output.append(String.format("* %1$-" + width_left + "s* ", entry.getKey()));
-            output.append(String.format("%1$-" + width_right + "s*\n", entry.getValue()));
+            String name = entry.getKey();
+            String value = entry.getValue();
+            output.append(String.format("* %1$-" + width_left + "s* ", name));
+
+            /* In case of values too long for current printing format. */
+            String[] valueWords = value.split("\\s+");
+            for (int i = 0; i < valueWords.length;) {
+                int j = i;
+                StringBuilder lineBuilder = new StringBuilder();
+
+                while (i < valueWords.length && lineBuilder.length() + valueWords[i].length() + 1 < width_right - 5) {
+                    lineBuilder.append(valueWords[i]).append(" ");
+                    i++;
+                }
+
+                /* Just in an unlikely case of at least 70 consequent characters - skip it. */
+                if (i > j) {
+                    if (j == 0)
+                        output.append(String.format("%1$-" + width_right + "s*\n", lineBuilder.toString()));
+                    else {
+                        output.append(String.format("* %1$-" + width_left + "s* ", ""));
+                        output.append(String.format("%1$-" + width_right + "s*\n", lineBuilder.toString()));
+                    }
+                } else {
+                    i++;
+                }
+            }
 
             for (int i = 0; i < width_total; i++)
                 output.append("*");

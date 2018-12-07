@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class Parser {
-
+    // TODO: add interfaces to parser classes! SOLID mnemonic!
     private int lineOffset;
     private ArrayList<Integer> lineBeginnings = new ArrayList<Integer>() {{ add(0); }};
 
