@@ -1,5 +1,6 @@
 package bibtex_search.bib_parser;
 
+import bibtex_search.bib_parser.record.IRecord;
 import bibtex_search.bib_parser.record.Record;
 import bibtex_search.bib_parser.record.RecordType;
 
@@ -12,9 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BibParser extends Parser {
+public class BibParser extends Parser implements IBibParser {
 
-    private Set<Record> records = new LinkedHashSet<>();
+    private Set<IRecord> records = new LinkedHashSet<>();
 
     private Map<String, String> stringVars = new HashMap<>();
 
@@ -27,14 +28,13 @@ public class BibParser extends Parser {
         parse(file);
     }
 
-    public Set<Record> getRecords() {
+    public Set<IRecord> getRecords() {
         return this.records;
     }
 
     /**
      * Adds all records found in a file to `records` set.
      * @param file File object for input .bib file
-     * @throws IOException
      */
     public void parse(File file) throws IOException {
         String fileContent;
@@ -68,10 +68,6 @@ public class BibParser extends Parser {
                 parseStringVar(contentBlock);
             }
         }
-
-        // TODO: pass to Index
-        for (Record record : records)
-            System.out.println(record);
     }
 
     /* --------------------------- PRIVATES ---------------------------- */

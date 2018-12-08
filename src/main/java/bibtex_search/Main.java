@@ -1,80 +1,46 @@
 package bibtex_search;
 
+import bibtex_search.bib_index.IIndex;
+import bibtex_search.bib_index.Index;
 import bibtex_search.bib_parser.BibParser;
+import bibtex_search.bib_parser.IBibParser;
+import bibtex_search.bib_parser.record.IRecord;
 import org.apache.commons.cli.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 
 public class Main {
+
     public static void main(String[] args) {
-        /* Parse arguments. */
-        CommandLine cmd = parseArguments(args);
+        try {
+            /* Parse arguments. */
+            ICLIArgParser argParser = new CLIArgParser();
+            argParser.parseArgs(args);
 
-        if (cmd != null) {
-            /* Arguments parsed no problem. */
-            BibParser bibParser = new BibParser();
-
+            IBibParser bibParser = new BibParser();
             try {
-                bibParser.parse(cmd.getOptionValue("f"));
+                /* Parse the input file. */
+                bibParser.parse(argParser.getBibFilePath());
 
-                // ...some searching based on command line arguments / print all.
+                IIndex index = new Index();
+                try {
+                    Set<IRecord> foundRecords = bibParser.getRecords();
+                    index.build(foundRecords);
+
+                    /* Search the file given the criteria. */
+                    index.search();
+                } catch (Exception exc) {
+                    System.out.println(exc.getMessage());
+                }
             } catch (FileNotFoundException exc) {
                 System.out.println("File not found: " + exc.getMessage());
             } catch(IOException exc) {
                 System.out.println("IO exception occured: " + exc.getMessage());
             }
-        }
-    }
-
-
-    /**
-     *
-     * @param args command line arguments
-     * @return command line arguments parsing results
-     */
-    public static CommandLine parseArguments(String[] args) {
-        // TODO: add option to suppress warnings!!!
-        Option filePath = Option.builder("f")
-                .longOpt("filepath")
-                .hasArg()
-                .argName( "file" )
-                .required()
-                .desc("path to .bib file" )
-                .build();
-
-        Option authors = Option.builder("a")
-                .longOpt("authors")
-                .hasArgs()
-                .argName("author")
-                .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("last names of authors")
-                .build();
-
-        Option categories = Option.builder("c")
-                .longOpt("categories")
-                .hasArgs()
-                .argName("category")
-                .numberOfArgs(Option.UNLIMITED_VALUES)
-                .desc("names of categories")
-                .build();
-
-        Options options = new Options();
-
-        options.addOption(filePath);
-        options.addOption(authors);
-        options.addOption(categories);
-
-        CommandLineParser cmdParser = new DefaultParser();
-        CommandLine cmd = null;
-
-        try{
-            cmd = cmdParser.parse( options, args);
         } catch (ParseException exc) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("java -jar BibTex-Parser.jar", options, true);
+            System.out.println(exc.getMessage());
         }
-
-        return cmd;
     }
 }

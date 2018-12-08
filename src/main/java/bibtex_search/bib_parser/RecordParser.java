@@ -114,6 +114,7 @@ public class RecordParser extends Parser {
                 Pair result = fieldParser.parse(new ParseBlock(fieldStart, fieldEnd, fieldContent));
                 /* Only retain the first occurrence. */
                 if (!fields.containsKey(result.getFirst().toLowerCase())
+                        && !result.getSecond().equals("")
                         && (alternatives.get(RecordType.valueOf(category)) == null
                                 || !fields.containsKey(alternatives.get(RecordType.valueOf(category))
                                     .get(result.getFirst().toLowerCase())))) {
@@ -183,8 +184,8 @@ public class RecordParser extends Parser {
         return results;
     }
 
-    /* Behold. */
 
+    /* Behold BibTex rules in all their glory. */
     private static Map<RecordType, Set<String>> mandatoryFields = new HashMap<RecordType, Set<String>>() {{
         put(RecordType.ARTICLE, new HashSet<String>(){{
             add("author");

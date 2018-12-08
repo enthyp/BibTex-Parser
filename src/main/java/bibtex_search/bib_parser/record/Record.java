@@ -2,7 +2,7 @@ package bibtex_search.bib_parser.record;
 
 import java.util.*;
 
-public class Record {
+public class Record implements IRecord {
     private RecordType type;
     private String key;
     private Map<String, Set<Person>> people;
@@ -45,7 +45,6 @@ public class Record {
     @Override
     public String toString() {
         /* Ugly. */
-        // TODO: fixed length assumption...
         int width_left = 40;
         int width_right = 75;
         int width_total = 120;
