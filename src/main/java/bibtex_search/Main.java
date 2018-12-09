@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Main {
-
+    // Sun right window - approx. 10:40
     public static void main(String[] args) {
         try {
             /* Parse arguments. */

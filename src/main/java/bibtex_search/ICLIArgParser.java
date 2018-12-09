@@ -15,7 +15,16 @@ public interface ICLIArgParser {
      */
     void parseArgs(String[] args) throws ParseException;
 
+    /**
+     *
+     * @return just what was given as path to .bib file
+     */
     String getBibFilePath();
 
+    /**
+     *
+     * @return a map from criterion name (implementation specific!)
+     * to an array of values of that criterion we want to see in the search results
+     */
     Map<String, String[]> getCriteria();
 }

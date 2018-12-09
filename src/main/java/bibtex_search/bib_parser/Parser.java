@@ -19,6 +19,7 @@ public abstract class Parser {
         int foundIndex = Collections.binarySearch(lineBeginnings, index);
 
         if (foundIndex >= 0) {
+            /*  */
             return lineOffset + foundIndex;
         } else {
             return lineOffset - foundIndex - 2;

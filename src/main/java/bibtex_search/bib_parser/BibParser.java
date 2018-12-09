@@ -16,20 +16,29 @@ import java.util.stream.Collectors;
 public class BibParser extends Parser implements IBibParser {
 
     private Set<IRecord> records = new LinkedHashSet<>();
-
     private Map<String, String> stringVars = new HashMap<>();
 
+    public Set<IRecord> getRecords() {
+        return this.records;
+    }
+
     /**
-     * Wrapper method provided to add testability of actual parsing.
-     * @param filePath absolute path to .bib file
+     * {@inheritDoc}
+     *
+     * Here it is a wrapper method provided to add testability of actual parsing.
      */
     public void parse(String filePath) throws IOException {
         File file = getFile(filePath);
         parse(file);
     }
 
-    public Set<IRecord> getRecords() {
-        return this.records;
+    /**
+     *
+     * @param filePath path to .bib file
+     * @return corresponding File object
+     */
+    private File getFile(String filePath) {
+        return new File(filePath);
     }
 
     /**
@@ -39,11 +48,11 @@ public class BibParser extends Parser implements IBibParser {
     public void parse(File file) throws IOException {
         String fileContent;
         try {
-            /* Read all of file contents to file. */
+            /* Read all of the file contents at once. */
             fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                     .collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            throw new IOException("Error reading .bib file! " + e.getMessage());
+            throw new IOException("Error reading the input file! " + e.getMessage());
         }
 
         /* Set up line beginnings. */
@@ -114,14 +123,5 @@ public class BibParser extends Parser implements IBibParser {
         Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
 
         return recordPattern.matcher(fileContent);
-    }
-
-    /**
-     *
-     * @param filePath path to .bib file
-     * @return corresponding File object
-     */
-    private File getFile(String filePath) {
-        return new File(filePath);
     }
 }
