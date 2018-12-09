@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FieldParser extends Parser {
+public class FieldParser extends WarningHandler {
 
     protected Map<String, String> stringVars;
 

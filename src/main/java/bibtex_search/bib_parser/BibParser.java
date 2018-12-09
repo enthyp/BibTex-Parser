@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BibParser extends Parser implements IBibParser {
+public class BibParser extends WarningHandler implements IBibParser {
 
     private Set<IRecord> records = new LinkedHashSet<>();
     private Map<String, String> stringVars = new HashMap<>();
@@ -24,7 +24,6 @@ public class BibParser extends Parser implements IBibParser {
 
     /**
      * {@inheritDoc}
-     *
      * Here it is a wrapper method provided to add testability of actual parsing.
      */
     public void parse(String filePath) throws IOException {
@@ -42,7 +41,7 @@ public class BibParser extends Parser implements IBibParser {
     }
 
     /**
-     * Adds all records found in a file to `records` set.
+     * Adds all records found in a file to `this.records` set.
      * @param file File object for input .bib file
      */
     public void parse(File file) throws IOException {
@@ -59,10 +58,11 @@ public class BibParser extends Parser implements IBibParser {
         this.setLineBeginnings(fileContent, 1);
 
         /* Match all String and Record blocks. */
-        Matcher recordMatcher = match(fileContent);
+        Matcher recordMatcher = this.matchEntries(fileContent);
 
         while (recordMatcher.find()) {
-            String category = recordMatcher.group("category");
+            /* Go over all matched blocks. */
+            String category = recordMatcher.group("category").toUpperCase();
             String content = recordMatcher.group("content");
             int recordStart = this.getLineNumber(recordMatcher.start());
             int recordEnd = this.getLineNumber(recordMatcher.end() - 1);
@@ -79,11 +79,13 @@ public class BibParser extends Parser implements IBibParser {
         }
     }
 
+
+
     /* --------------------------- PRIVATES ---------------------------- */
 
     /**
      *
-     * @param category String naming the record category
+     * @param category name of the record category
      * @param recordBlock contains contents of the record and its position
      */
     private void parseRecord(String category, ParseBlock recordBlock) {
@@ -114,11 +116,12 @@ public class BibParser extends Parser implements IBibParser {
     }
 
     /**
+     * This method assumes no closing braces inside a record (simplification).
      *
      * @param fileContent String with file contents
      * @return Matcher object for all the records and variable definitions (and more)
      */
-    private Matcher match(String fileContent) {
+    private Matcher matchEntries(String fileContent) {
         String regex = "@(?<category>\\w+)\\{(?<content>.+?)}";
         Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
 

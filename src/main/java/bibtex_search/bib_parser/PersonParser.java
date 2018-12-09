@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class PersonParser extends Parser {
+public class PersonParser extends WarningHandler {
 
     private enum Case {
         UPPER, LOWER, UNDETERMINED;

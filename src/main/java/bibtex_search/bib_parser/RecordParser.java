@@ -10,10 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class RecordParser extends Parser {
+public class RecordParser extends WarningHandler {
     // TODO: empty field values don't count!!!
     private Map<String, String> stringVars;
-
     public RecordParser(Map<String, String> stringVars) {
         this.stringVars = stringVars;
     }
