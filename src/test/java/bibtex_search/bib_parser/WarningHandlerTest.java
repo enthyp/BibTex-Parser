@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-public class ParserTest {
+public class WarningHandlerTest {
     @Test
     public void getLineNumberTest() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException, IOException {

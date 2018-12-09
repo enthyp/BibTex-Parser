@@ -20,6 +20,8 @@ public class RecordParser extends WarningHandler {
 
     public Record parseRecord(String recordContent) throws ParseException {
         /* Break down the record again (to decouple from BibParser class). */
+        // ASSUMPTION: category name consists of word characters only.
+        // ASSUMPTION: there are no closing braces in the record's body.
         String regex = "@(?<category>\\w+)\\{(?<content>.+?)}";
         Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
         Matcher recordMatcher = recordPattern.matcher(recordContent);
@@ -37,8 +39,8 @@ public class RecordParser extends WarningHandler {
         }
 
         /* Get record's fields - people (authors, editors, etc.) and other. */
-        Map<String, Set<Person>> foundPeople = parsePeople(content);
-        Map<String, String> foundFields = parseFields(content);
+        Map<String, Set<Person>> foundPeople = parsePeople(recordContent);
+        Map<String, String> foundFields = parseFields(recordContent);
 
         /* Check for mandatory and ignored fields. */
         Set<String> mandatory =  new HashSet<>(mandatoryFields.get(RecordType.valueOf(category)));
@@ -96,6 +98,8 @@ public class RecordParser extends WarningHandler {
      * @return record's key
      */
     private String parseKey(String content) throws ParseException {
+        // ASSUMPTION: key starts immediately after opening brace and contains no , | = nor white characters.
+        // It must be followed by a comma immediately.
         Pattern keyPattern = Pattern.compile("^(?<key>[^,|=\\s]+),");
         Matcher keyMatcher = keyPattern.matcher(content);
 
@@ -113,11 +117,11 @@ public class RecordParser extends WarningHandler {
      */
     private Map<String, String> parseFields(String content) {
         Map<String, String> fields = new LinkedHashMap<>();
-        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|=]+\\s*=\\s*[^,|=]+)(,|$)");
+        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|=\"\\s]+\\s*=\\s*[^,|=]+)(,|(\\s*}))");
         Matcher fieldMatcher = fieldPattern.matcher(content);
 
         while (fieldMatcher.find()) {
-            int fieldStart = this.getLineNumber(fieldMatcher.start());
+            int fieldStart = this.getLineNumber(fieldMatcher.start("field"));
             /* `trim` method is used to get rid of trailing whitespace. */
             String fieldContent = fieldMatcher.group("field").trim();
 
@@ -144,8 +148,7 @@ public class RecordParser extends WarningHandler {
      * @return personal data of all found people (authors, editors, etc.)
      */
     private Map<String, Set<Person>> parsePeople(String content) {
-        Pattern personPattern = Pattern.compile("(?<type>\\w+)\\s*=\\s*\"(?<person>[^|\"]+)\"\\|",
-                Pattern.CASE_INSENSITIVE);
+        Pattern personPattern = Pattern.compile("(?<type>\\w+)\\s*=\\s*\"(?<person>[^|\"]+)\"\\|");
         Matcher personMatcher = personPattern.matcher(content);
         /* A map from person type (e.g. editor) to all the people of this type in the record. */
         Map<String, Set<Person>> results = new LinkedHashMap<>();

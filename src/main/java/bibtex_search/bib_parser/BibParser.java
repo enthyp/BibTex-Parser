@@ -104,7 +104,7 @@ public class BibParser extends WarningHandler implements IBibParser {
         varParser.setLineBeginnings(varContent, varStart);
         try {
             Pair stringVar = varParser.parse(varContent);
-            stringVars.put(stringVar.getFirst().toUpperCase(), stringVar.getSecond());
+            stringVars.put(stringVar.getFirst().toLowerCase(), stringVar.getSecond());
         } catch (ParseException exc) {
             this.handle(exc);
         }

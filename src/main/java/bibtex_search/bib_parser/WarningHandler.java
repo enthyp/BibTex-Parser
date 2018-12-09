@@ -17,7 +17,7 @@ public abstract class WarningHandler {
     private int lineOffset;
 
     /* Indices of starting characters of subsequent lines of given string. */
-    private ArrayList<Integer> lineBeginnings = new ArrayList<Integer>() {{ add(0); }};
+    public ArrayList<Integer> lineBeginnings = new ArrayList<Integer>() {{ add(0); }};
 
 
     /**

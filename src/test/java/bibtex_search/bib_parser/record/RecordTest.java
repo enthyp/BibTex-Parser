@@ -13,9 +13,9 @@ public class RecordTest {
 
         Map<String, String> fields = new HashMap<>();
         fields.put("year", "1984");
-        fields.put("title", "Bababoo");
+        fields.put("title", "1984");
 
-        Record record = new Record(RecordType.BOOKLET, "bddd-gogo", person, fields);
+        Record record = new Record(RecordType.BOOKLET, "bddd-sdgo", person, fields);
         System.out.println(record);
     }
 }

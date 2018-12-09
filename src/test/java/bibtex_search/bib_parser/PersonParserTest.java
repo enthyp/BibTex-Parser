@@ -16,15 +16,6 @@ import static org.junit.Assert.*;
 public class PersonParserTest {
 
     @Test
-    public void regexTest() {
-        String test = "B,,,";
-        String[] words = test.split(",", -1);
-        for(String word : words)
-            System.out.println(word);
-        System.out.println(words.length);
-    }
-
-    @Test
     public void parseTest() throws IOException, ParseException {
         String[] fileNames = new String[] {"/xampl_auth.bib", "/first.bib", "/von.bib", "/last.bib", "/jr.bib"};
         File[] files = new File[fileNames.length];
@@ -90,7 +81,7 @@ public class PersonParserTest {
     public void startsWithTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = PersonParser.class.getDeclaredMethod("startsWith", String.class);
         method.setAccessible(true);
-        System.out.println(method.invoke(new PersonParser(), "[\\'E]mile"));
+        assertEquals(method.invoke(new PersonParser(), "[\\'E]mile").toString(), "LOWER");
     }
 }
 

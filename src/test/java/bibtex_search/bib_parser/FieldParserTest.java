@@ -22,7 +22,7 @@ public class FieldParserTest {
                 .collect(Collectors.joining("\n"));
 
         FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
-            put("var1", "mofo as fuck");
+            put("var1", "so good");
         }});
         System.out.println(fieldParser.parse(fileContent));
     }

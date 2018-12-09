@@ -22,8 +22,11 @@ public class RecordParserTest {
                     .collect(Collectors.joining("\n"));
 
         RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
-            put("VAR1", "wazzup ");
+            put("var1", "stuff ");
         }});
+
+        recordParser.setLineBeginnings(fileContent, 1);
+
         System.out.println(recordParser.parseRecord(fileContent));
     }
 }

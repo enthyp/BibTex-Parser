@@ -48,8 +48,8 @@ public class FieldParser extends WarningHandler {
                 output.append(word);
             } else {
                 /* Named variable encountered. */
-                if (stringVars.containsKey(word.toUpperCase()))
-                    output.append(stringVars.get(word.toUpperCase()));
+                if (stringVars.containsKey(word.toLowerCase()))
+                    output.append(stringVars.get(word.toLowerCase()));
                 else
                     throw new ParseException(String.format("Variable %s not found!", word));
             }
