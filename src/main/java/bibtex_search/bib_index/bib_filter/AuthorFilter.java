@@ -16,18 +16,22 @@ public class AuthorFilter extends IFilter {
 
     public AuthorFilter(Set<IRecord> records) {
         super(records);
-
         for (IRecord record : records) {
             String key = record.getKey();
 
             /* Get all authors mentioned in the record. */
-            Set<Person> authors = record.getPeople().get("author");
-            for (Person author : authors) {
-                String lastName = author.getLast();
-                /* Put the authors' last names and corresponding record keys into the map. */
-                if (!authorToKey.containsKey(lastName))
-                    authorToKey.put(lastName, new HashSet<>());
-                authorToKey.get(lastName).add(key);
+            Map<String, Set<Person>> authorsMap = record.getPeople();
+
+            if (!authorsMap.isEmpty() && authorsMap.containsKey("author")) {
+                Set<Person> authors = authorsMap.get("author");
+
+                for (Person author : authors) {
+                    String lastName = author.getLast();
+                    /* Put the authors' last names and corresponding record keys into the map. */
+                    if (!authorToKey.containsKey(lastName))
+                        authorToKey.put(lastName, new HashSet<>());
+                    authorToKey.get(lastName).add(key);
+                }
             }
         }
     }

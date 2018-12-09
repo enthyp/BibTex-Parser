@@ -24,13 +24,17 @@ public class Index implements IIndex {
 
     @Override
     public ISearchResults search(List<ISearchCriterion> criteria) {
+        /* No criterion was recognized from command line arguments. */
+        if (criteria == null)
+            return null;
+
         ISearchResults searchResults = new SearchResults(keyToRecord.keySet());
 
         for (ISearchCriterion criterion : criteria) {
             IFilter filter;
             if (!filters.containsKey(criterion)) {
                 /* Build the filter if it was not accessed before. */
-                filter = FilterFactory.getFilter(criterion, (Set<IRecord>)this.keyToRecord.values());
+                filter = FilterFactory.getFilter(criterion, new HashSet<>(this.keyToRecord.values()));
                 if (filter != null) {
                     filters.put(criterion, filter);
                 }
@@ -49,13 +53,13 @@ public class Index implements IIndex {
 
     @Override
     public void show(ISearchResults keys) {
-        for (String key : keys.getResultKeys()) {
-            // This if is not necessary by default.
-            if (keyToRecord.containsKey(key)) {
-                System.out.println(keyToRecord.get(key));
+        if (keys != null) {
+            for (String key : keys.getResultKeys()) {
+                // This if is not necessary by default.
+                if (keyToRecord.containsKey(key)) {
+                    System.out.println(keyToRecord.get(key));
+                }
             }
         }
     }
-
-
 }

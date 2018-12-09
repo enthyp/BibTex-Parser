@@ -29,26 +29,22 @@ public class Main {
                 bibParser.parse(argParser.getBibFilePath());
 
                 IIndex index = new Index();
-                try {
-                    Set<IRecord> foundRecords = bibParser.getRecords();
-                    index.build(foundRecords);
-                    // TODO: test the Index. Heavily.
-                    /* Get the criteria and search the file accordingly. */
-                    List<ISearchCriterion> criteria = CriteriaFactory.getCriteria(argParser.getCriteria());
-                    ISearchResults results = index.search(criteria);
+                Set<IRecord> foundRecords = bibParser.getRecords();
+                index.build(foundRecords);
+                // TODO: test the Index. Heavily.
+                /* Get the criteria and search the file accordingly. */
+                List<ISearchCriterion> criteria = CriteriaFactory.getCriteria(argParser.getCriteria());
+                ISearchResults results = index.search(criteria);
 
-                    /* Print the results to the console. */
-                    index.show(results);
-                } catch (Exception exc) {
-                    System.out.println(exc.getMessage());
-                }
+                /* Print the results to the console. */
+                index.show(results);
             } catch (FileNotFoundException exc) {
                 System.out.println("File not found: " + exc.getMessage());
             } catch(IOException exc) {
                 System.out.println("IO exception occured: " + exc.getMessage());
             }
         } catch (ParseException exc) {
-            System.out.println(exc.getMessage());
+            System.out.println("Error parsing command line arguments! " + exc.getMessage());
         }
     }
 }

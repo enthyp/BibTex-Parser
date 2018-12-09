@@ -1,5 +1,7 @@
 package bibtex_search.bib_index.bib_filter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AuthorSearchCriterion implements ISearchCriterion {
@@ -8,8 +10,8 @@ public class AuthorSearchCriterion implements ISearchCriterion {
      */
     private List<String> authors;
 
-    public AuthorSearchCriterion(List<String> authors) {
-        this.authors = authors;
+    public AuthorSearchCriterion(String[] authors) {
+        this.authors = new ArrayList<>(Arrays.asList(authors));
     }
 
     @Override

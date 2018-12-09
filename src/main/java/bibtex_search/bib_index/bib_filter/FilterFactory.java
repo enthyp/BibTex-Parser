@@ -14,9 +14,9 @@ public class FilterFactory {
         if (filterChoice.containsKey(criterion.getName())) {
             try {
                 Class<? extends IFilter> filterClazz = filterChoice.get(criterion.getName());
-                Constructor<? extends IFilter> constr = filterClazz
+                Constructor<? extends IFilter> constructor = filterClazz
                         .getConstructor(Set.class);
-                return constr.newInstance(records);
+                return constructor.newInstance((Object)records);
                 } catch (NoSuchMethodException | InstantiationException |
                     IllegalAccessException | InvocationTargetException exc) {
                 System.out.println("WARNING: problem occurred building the filter!\n" + exc.getMessage());
