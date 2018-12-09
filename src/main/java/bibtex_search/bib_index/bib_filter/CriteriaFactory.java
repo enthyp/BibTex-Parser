@@ -1,4 +1,4 @@
-package bibtex_search.bib_index.bib_search_criterion;
+package bibtex_search.bib_index.bib_filter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,16 +11,16 @@ public class CriteriaFactory {
     public static List<ISearchCriterion> getCriteria(Map<String, String[]> criteriaByNames) {
         List<ISearchCriterion> criteria = new ArrayList<>();
 
-        for (Map.Entry<String, String[]> crit : criteriaByNames.entrySet()) {
-            String name = crit.getKey();
-            String[] values = crit.getValue();
+        for (Map.Entry<String, String[]> c : criteriaByNames.entrySet()) {
+            String name = c.getKey();
+            String[] values = c.getValue();
 
             if (criterionChoice.containsKey(name)) {
                 try {
                     Class<? extends ISearchCriterion> criterionClazz = criterionChoice.get(name);
-                    Constructor<? extends ISearchCriterion> constr = criterionClazz
+                    Constructor<? extends ISearchCriterion> constructor = criterionClazz
                             .getConstructor(String[].class);
-                    ISearchCriterion criterion = constr.newInstance(new Object[] {values});
+                    ISearchCriterion criterion = constructor.newInstance(new Object[] {values});
                     criteria.add(criterion);
                 } catch (NoSuchMethodException | InstantiationException |
                         IllegalAccessException | InvocationTargetException exc) {

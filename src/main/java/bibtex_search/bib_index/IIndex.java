@@ -1,6 +1,6 @@
 package bibtex_search.bib_index;
 
-import bibtex_search.bib_index.bib_search_criterion.ISearchCriterion;
+import bibtex_search.bib_index.bib_filter.ISearchCriterion;
 import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.List;
@@ -27,4 +27,10 @@ public interface IIndex {
      * @return search results
      */
     ISearchResults search(List<ISearchCriterion> criteria);
+
+    /**
+     *
+     * @param keys of the records found by `search`
+     */
+    void show(ISearchResults keys);
 }

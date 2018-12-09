@@ -7,28 +7,21 @@ import java.util.Set;
 
 public class SearchResults implements ISearchResults {
 
-    private Set<IRecord> results;
+    private Set<String> resultKeys;
 
-    public SearchResults() {
-    }
-
-    public SearchResults(Set<IRecord> results) {
-        this.results = results;
+    public SearchResults(Set<String> resultKeys) {
+        this.resultKeys = resultKeys;
     }
 
     public void addResult(IRecord record) {
-        if (results != null) {
-            results.add(record);
+        if (resultKeys != null) {
+            resultKeys.add(record.getKey());
         } else {
-            results = new LinkedHashSet<IRecord>() {{
-                add(record);
+            resultKeys = new LinkedHashSet<String>() {{
+                add(record.getKey());
             }};
         }
     }
 
-    @Override
-    public void show() {
-        for (IRecord record : results)
-            System.out.println(record);
-    }
+    public Set<String> getResultKeys() { return this.resultKeys; }
 }

@@ -1,4 +1,4 @@
-package bibtex_search.bib_index.bib_search_criterion;
+package bibtex_search.bib_index.bib_filter;
 
 import bibtex_search.bib_index.ISearchResults;
 import bibtex_search.bib_parser.record.IRecord;
@@ -13,9 +13,7 @@ import java.util.Set;
  */
 public abstract class IFilter {
 
-    public IFilter(Set<IRecord> records) {
-
-    }
+    public IFilter(Set<IRecord> records) {}
 
     /**
      *

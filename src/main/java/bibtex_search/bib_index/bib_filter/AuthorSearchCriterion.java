@@ -1,4 +1,4 @@
-package bibtex_search.bib_index.bib_search_criterion;
+package bibtex_search.bib_index.bib_filter;
 
 import java.util.List;
 

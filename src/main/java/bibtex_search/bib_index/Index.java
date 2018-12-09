@@ -1,8 +1,8 @@
 package bibtex_search.bib_index;
 
-import bibtex_search.bib_index.bib_search_criterion.FilterFactory;
-import bibtex_search.bib_index.bib_search_criterion.IFilter;
-import bibtex_search.bib_index.bib_search_criterion.ISearchCriterion;
+import bibtex_search.bib_index.bib_filter.FilterFactory;
+import bibtex_search.bib_index.bib_filter.IFilter;
+import bibtex_search.bib_index.bib_filter.ISearchCriterion;
 import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.*;
@@ -13,26 +13,29 @@ import java.util.*;
  */
 public class Index implements IIndex {
 
-    private LinkedHashSet<IRecord> records;
+    private Map<String, IRecord> keyToRecord = new LinkedHashMap<>();
     private Map<ISearchCriterion, IFilter> filters = new HashMap<>();
 
     @Override
     public void build(Set<IRecord> records) {
-        this.records = (LinkedHashSet<IRecord>)records;
+        for (IRecord record: records)
+            keyToRecord.put(record.getKey(), record);
     }
 
     @Override
     public ISearchResults search(List<ISearchCriterion> criteria) {
-        ISearchResults searchResults = new SearchResults(this.records);
+        ISearchResults searchResults = new SearchResults(keyToRecord.keySet());
 
         for (ISearchCriterion criterion : criteria) {
-            IFilter filter = null;
+            IFilter filter;
             if (!filters.containsKey(criterion)) {
                 /* Build the filter if it was not accessed before. */
-                filter = FilterFactory.getFilter(criterion, this.records);
+                filter = FilterFactory.getFilter(criterion, (Set<IRecord>)this.keyToRecord.values());
                 if (filter != null) {
                     filters.put(criterion, filter);
                 }
+            } else {
+                filter  = filters.get(criterion);
             }
 
             if (filter != null) {
@@ -43,4 +46,16 @@ public class Index implements IIndex {
 
         return searchResults;
     }
+
+    @Override
+    public void show(ISearchResults keys) {
+        for (String key : keys.getResultKeys()) {
+            // This if is not necessary by default.
+            if (keyToRecord.containsKey(key)) {
+                System.out.println(keyToRecord.get(key));
+            }
+        }
+    }
+
+
 }

@@ -51,14 +51,21 @@ public class CLIArgParser implements ICLIArgParser {
         options.addOption(categories);
 
         CommandLineParser cmdParser = new DefaultParser();
-        CommandLine cmd = null;
 
         try{
-            cmd = cmdParser.parse( options, args);
+            /* File path. */
+            CommandLine cmd = cmdParser.parse( options, args);
             this.bibFilePath = cmd.getOptionValue("f");
+
+            /* Authors and categories. */
+            String[] a =  cmd.getOptionValues("a");
+            String[] c = cmd.getOptionValues("c");
             this.criteria = new HashMap<>();
-            this.criteria.put("authors", cmd.getOptionValues("a"));
-            this.criteria.put("categories", cmd.getOptionValues("c"));
+
+            if (a != null)
+                this.criteria.put("authors", a);
+            if (c != null)
+                this.criteria.put("categories", c);
         } catch (ParseException exc) {
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
