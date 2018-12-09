@@ -2,20 +2,20 @@ package bibtex_search;
 
 import org.apache.commons.cli.ParseException;
 
+import java.util.Map;
+
 /**
  * An Apache Commons CLI-based argument parser.
  */
 public interface ICLIArgParser {
     /**
-     *
+     * This method parses the input for the path to the input .bib file
+     * and additional search criteria specified by a particular implementation.
      * @param args command line arguments
-     * This method parses at least .bib file path, author's last names and categories.
      */
     void parseArgs(String[] args) throws ParseException;
 
     String getBibFilePath();
 
-    String[] getAuthors();
-
-    String[] getCategories();
+    Map<String, String[]> getCriteria();
 }

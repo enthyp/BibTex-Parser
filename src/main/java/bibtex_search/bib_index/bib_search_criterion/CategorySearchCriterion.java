@@ -11,6 +11,11 @@ public class CategorySearchCriterion implements ISearchCriterion {
         this.categories = categories;
     }
 
+    @Override
+    public String getName() {
+        return "categories";
+    }
+
     public List<RecordType> getCategories() {
         return this.categories;
     }

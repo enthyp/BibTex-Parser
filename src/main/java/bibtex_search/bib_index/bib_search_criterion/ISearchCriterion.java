@@ -5,5 +5,10 @@ package bibtex_search.bib_index.bib_search_criterion;
  * to only one field of a record
  */
 public interface ISearchCriterion {
-    
+    /**
+     *
+     * @return name of the criterion. It should have an accompanying IFilter implementation
+     * that should be returned by used IFilterFactory implementation.
+     */
+     String getName();
 }

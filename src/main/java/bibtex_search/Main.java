@@ -1,7 +1,10 @@
 package bibtex_search;
 
 import bibtex_search.bib_index.IIndex;
+import bibtex_search.bib_index.ISearchResults;
 import bibtex_search.bib_index.Index;
+import bibtex_search.bib_index.bib_search_criterion.CriteriaFactory;
+import bibtex_search.bib_index.bib_search_criterion.ISearchCriterion;
 import bibtex_search.bib_parser.BibParser;
 import bibtex_search.bib_parser.IBibParser;
 import bibtex_search.bib_parser.record.IRecord;
@@ -9,6 +12,7 @@ import org.apache.commons.cli.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class Main {
@@ -29,8 +33,12 @@ public class Main {
                     Set<IRecord> foundRecords = bibParser.getRecords();
                     index.build(foundRecords);
 
-                    /* Search the file given the criteria. */
-                    index.search();
+                    /* Get the criteria and search the file accordingly. */
+                    List<ISearchCriterion> criteria = CriteriaFactory.getCriteria(argParser.getCriteria());
+                    ISearchResults results = index.search(criteria);
+
+                    /* Print the results to the console. */
+                    results.show();
                 } catch (Exception exc) {
                     System.out.println(exc.getMessage());
                 }

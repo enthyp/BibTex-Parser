@@ -19,10 +19,12 @@ public class CLIArgParserTest {
 
         try {
             CLIArgParser argParser = new CLIArgParser();
-            CommandLine cmd = argParser.parseArgs(args);
-            assertEquals(cmd.getOptionValue("f"), filePath);
-            assertArrayEquals(cmd.getOptionValues("a"), authors);
-            assertArrayEquals(cmd.getOptionValues("c"), categories);
+            argParser.parseArgs(args);
+            assertEquals(argParser.getBibFilePath(), filePath);
+            assertTrue(argParser.getCriteria().containsKey("authors"));
+            assertArrayEquals(argParser.getCriteria().get("authors"), authors);
+            assertTrue(argParser.getCriteria().containsKey("categories"));
+            assertArrayEquals(argParser.getCriteria().get("categories"), categories);
 
             /* Check help (exception message). */
             argParser.parseArgs(new String[] {"some", "stuff"});

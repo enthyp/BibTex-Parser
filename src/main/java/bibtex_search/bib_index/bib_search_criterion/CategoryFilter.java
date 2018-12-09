@@ -5,11 +5,9 @@ import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.Set;
 
-public class AuthorFilter extends IFilter {
-
-    public AuthorFilter(Set<IRecord> records) {
+public class CategoryFilter extends IFilter {
+    public CategoryFilter(Set<IRecord> records) {
         super(records);
-
     }
 
     @Override

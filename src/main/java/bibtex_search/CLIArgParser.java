@@ -4,12 +4,19 @@ import org.apache.commons.cli.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * {@inheritDoc}
+ *
+ * This implementation parses for, aside from the input file path, a list of
+ * authors' last names and categories of BibTeX records.
+ */
 public class CLIArgParser implements ICLIArgParser {
 
     private String bibFilePath;
-    private String[] authors;
-    private String[] categories;
+    private Map<String, String[]> criteria;
 
     public void parseArgs(String[] args) throws ParseException {
         // TODO: additional option to suppress warnings?
@@ -49,8 +56,9 @@ public class CLIArgParser implements ICLIArgParser {
         try{
             cmd = cmdParser.parse( options, args);
             this.bibFilePath = cmd.getOptionValue("f");
-            this.authors = cmd.getOptionValues("a");
-            this.categories = cmd.getOptionValues("c");
+            this.criteria = new HashMap<>();
+            this.criteria.put("authors", cmd.getOptionValues("a"));
+            this.criteria.put("categories", cmd.getOptionValues("c"));
         } catch (ParseException exc) {
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -67,11 +75,7 @@ public class CLIArgParser implements ICLIArgParser {
         return bibFilePath;
     }
 
-    public String[] getAuthors() {
-        return authors;
-    }
-
-    public String[] getCategories() {
-        return categories;
+    public Map<String, String[]> getCriteria() {
+        return this.criteria;
     }
 }

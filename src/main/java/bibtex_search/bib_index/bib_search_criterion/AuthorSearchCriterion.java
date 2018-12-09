@@ -12,6 +12,11 @@ public class AuthorSearchCriterion implements ISearchCriterion {
         this.authors = authors;
     }
 
+    @Override
+    public String getName() {
+        return "authors";
+    }
+
     public List<String> getAuthors() {
         return authors;
     }
