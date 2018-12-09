@@ -134,4 +134,9 @@ public class Record implements IRecord {
     public Map<String, Set<Person>> getPeople() {
         return people;
     }
+
+    @Override
+    public Map<String, String> getFields() {
+        return this.fields;
+    }
 }

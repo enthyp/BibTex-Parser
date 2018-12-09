@@ -45,11 +45,19 @@ public class CLIArgParser implements ICLIArgParser {
                 .desc("names of categories")
                 .build();
 
+        Option years = Option.builder("y")
+                .longOpt("years")
+                .hasArgs()
+                .argName("year")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
+                .build();
+
         Options options = new Options();
 
         options.addOption(filePath);
         options.addOption(authors);
         options.addOption(categories);
+        options.addOption(years);
 
         CommandLineParser cmdParser = new DefaultParser();
 
@@ -61,12 +69,15 @@ public class CLIArgParser implements ICLIArgParser {
             /* Authors and categories. */
             String[] a =  cmd.getOptionValues("a");
             String[] c = cmd.getOptionValues("c");
+            String[] y = cmd.getOptionValues("y");
             this.criteria = new HashMap<>();
 
             if (a != null)
                 this.criteria.put("authors", a);
             if (c != null)
                 this.criteria.put("categories", c);
+            if (y != null)
+                this.criteria.put("years", y);
         } catch (ParseException exc) {
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);

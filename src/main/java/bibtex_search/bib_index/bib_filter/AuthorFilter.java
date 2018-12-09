@@ -7,7 +7,7 @@ import bibtex_search.bib_parser.record.Person;
 
 import java.util.*;
 
-public class AuthorFilter extends IFilter {
+public class AuthorFilter extends Filter {
 
     /**
      * A map from author's last names to keys of appropriate records.

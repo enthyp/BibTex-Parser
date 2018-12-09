@@ -9,11 +9,16 @@ import java.util.Set;
  * A filter object used to retain only matching IRecord instances. It is specific for a set
  * of IRecord instances and for a type of search criterion, e.g. search by author's last name.
  *  However, it is not specific for a single value of the criterion. Implementations should
- *  keep data structures that allow for efficient examination of IRecord instances.
+ *  keep data structures that allow for efficient examination of IRecord instances (see examples).
  */
-public abstract class IFilter {
+public abstract class Filter {
 
-    public IFilter(Set<IRecord> records) {}
+    /**
+     * Upon construction some data structure can be created to allow for faster
+     * filtering later on, even when the criteria change.
+     * @param records records for which data structure is built
+     */
+    public Filter(Set<IRecord> records) {}
 
     /**
      *

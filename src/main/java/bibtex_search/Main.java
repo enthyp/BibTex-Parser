@@ -3,7 +3,7 @@ package bibtex_search;
 import bibtex_search.bib_index.IIndex;
 import bibtex_search.bib_index.ISearchResults;
 import bibtex_search.bib_index.Index;
-import bibtex_search.bib_index.bib_filter.CriteriaFactory;
+import bibtex_search.bib_index.bib_filter.FilterFactory;
 import bibtex_search.bib_index.bib_filter.ISearchCriterion;
 import bibtex_search.bib_parser.BibParser;
 import bibtex_search.bib_parser.IBibParser;
@@ -32,7 +32,7 @@ public class Main {
                 index.build(foundRecords);
                 // TODO: test the Index. Heavily.
                 /* Get the criteria and search the file accordingly. */
-                List<ISearchCriterion> criteria = CriteriaFactory.getCriteria(argParser.getCriteria());
+                List<ISearchCriterion> criteria = FilterFactory.getCriteria(argParser.getCriteria());
                 ISearchResults results = index.search(criteria);
 
                 /* Print the results to the console. */

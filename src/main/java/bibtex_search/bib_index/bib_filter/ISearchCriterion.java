@@ -5,9 +5,10 @@ package bibtex_search.bib_index.bib_filter;
  * a specific property of IRecord instances, e.g. the type of IRecord instance.
  */
 public interface ISearchCriterion {
+
     /**
      *
-     * @return name of the criterion. It must have an accompanying IFilter implementation
+     * @return name of the criterion. It must have an accompanying Filter implementation
      * that is to be returned by used IFilterFactory implementation.
      */
      String getName();

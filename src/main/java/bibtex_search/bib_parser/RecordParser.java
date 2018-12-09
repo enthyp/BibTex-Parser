@@ -104,7 +104,7 @@ public class RecordParser extends WarningHandler {
         Matcher keyMatcher = keyPattern.matcher(content);
 
         if (keyMatcher.find()) {
-            return keyMatcher.group("key");
+            return keyMatcher.group("key").toLowerCase();
         } else {
             throw new ParseException("Error parsing record's key!");
         }
@@ -131,8 +131,8 @@ public class RecordParser extends WarningHandler {
             try {
                 Pair result = fieldParser.parse(fieldContent);
                 /* Only retain the first occurrence. */
-                if (!fields.containsKey(result.getFirst().toLowerCase()) && !result.getSecond().equals("")) {
-                    fields.put(result.getFirst().toLowerCase(), result.getSecond());
+                if (!fields.containsKey(result.getFirst()) && !result.getSecond().equals("")) {
+                    fields.put(result.getFirst(), result.getSecond());
                 }
             } catch (ParseException exc) {
                 this.handle(exc);

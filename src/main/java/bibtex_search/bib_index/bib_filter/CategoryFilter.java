@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CategoryFilter extends IFilter {
+public class CategoryFilter extends Filter {
 
     /**
      * A map from categories to keys of appropriate records.

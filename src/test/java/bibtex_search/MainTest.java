@@ -4,8 +4,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
-
 public class MainTest {
     @Test
     public void mainTestCategories() {
@@ -28,11 +26,21 @@ public class MainTest {
     }
 
     @Test
+    public void mainTestYears() {
+        String fileName = "/xampl_simplified.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String filePath = file.getAbsolutePath();
+
+        Main.main(new String[] {"-f", filePath, "-y", "1988", "1977", "2022"});
+    }
+
+    @Test
     public void mainTestAll() {
         String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
 
-        Main.main(new String[] {"-f", filePath, "-a", "Manmaker", "Knuth", "-c", "manual", "inboOk"});
+        Main.main(new String[] {"-f", filePath, "-a", "Manmaker", "Knuth", "-c", "manual", "inboOk",
+        "-y", "1986", "1977"});
     }
 }

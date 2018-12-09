@@ -27,7 +27,7 @@ public class FieldParser extends WarningHandler {
                 throw new ParseException(this.getLocation() + exc.getMessage());
             }
 
-            return new Pair(fieldMatcher.group("name"), value);
+            return new Pair(fieldMatcher.group("name").toLowerCase(), value);
         } else {
             throw new ParseException(this.getLocation() +
                     String.format("Could not parse record's field: %s", fieldContent));
