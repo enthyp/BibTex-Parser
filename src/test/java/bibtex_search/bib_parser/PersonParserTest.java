@@ -1,6 +1,7 @@
 package bibtex_search.bib_parser;
 
 import bibtex_search.bib_parser.record.Person;
+import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -9,7 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 
 import static org.junit.Assert.*;
 
@@ -44,7 +44,7 @@ public class PersonParserTest {
 
             int j = 1;
             while ((lines[0] = readers[0].readLine()) != null) {
-                Person person = personParser.parse(new ParseBlock(0, 0, lines[0]));
+                Person person = personParser.parse(lines[0]);
                 for (int i = 1; i < lines.length; i++)
                     lines[i] = readers[i].readLine()
                             .replaceAll("^\\s+|\\s+$", "")

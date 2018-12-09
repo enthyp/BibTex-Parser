@@ -127,34 +127,11 @@ public class Record implements IRecord {
         return type;
     }
 
-    public void setType(RecordType type) {
-        this.type = type;
-    }
-
     public String getKey() {
         return key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-    public Map<String, String> getFields() {
-        return fields;
-    }
-
-    public void setFields(Map<String, String> fields) {
-        this.fields = fields;
-    }
-
-    public void addField(String name, String value) {
-        fields.put(name, value);
-    }
-
     public Map<String, Set<Person>> getPeople() {
         return people;
-    }
-
-    public void setPeople(Map<String, Set<Person>> people) {
-        this.people = people;
     }
 }

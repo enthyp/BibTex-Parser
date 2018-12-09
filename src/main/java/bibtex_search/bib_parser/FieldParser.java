@@ -1,36 +1,43 @@
 package bibtex_search.bib_parser;
 
-import java.text.ParseException;
+import org.apache.commons.cli.ParseException;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FieldParser extends WarningHandler {
 
-    protected Map<String, String> stringVars;
+    private Map<String, String> stringVars;
 
     public FieldParser(Map<String, String> stringVars) {
         this.stringVars = stringVars;
     }
 
-    public Pair parse(ParseBlock fieldContentBlock) throws ParseException {
-        Pattern fieldPattern = Pattern.compile("(?<name>\\w+)\\s=\\s(?<value>[^,|]+)");
-        Matcher fieldMatcher = fieldPattern.matcher(fieldContentBlock.getContent());
+    public Pair parse(String fieldContent) throws ParseException {
+        Pattern fieldPattern = Pattern.compile("(?<name>\\w+)\\s*=\\s*(?<value>[^,|]+)");
+        Matcher fieldMatcher = fieldPattern.matcher(fieldContent);
 
         if (fieldMatcher.find()) {
-            String value = parseValue(new ParseBlock(fieldContentBlock.getLineStart(),
-                    fieldContentBlock.getLineEnd(), fieldMatcher.group("value")));
+            String value;
+
+            try {
+                value = parseValue(fieldMatcher.group("value"));
+            } catch (ParseException exc) {
+                throw new ParseException(this.getLocation() + exc.getMessage());
+            }
+
             return new Pair(fieldMatcher.group("name"), value);
         } else {
-            throw new ParseException(String.format("Line %d\nError parsing record's field: %s\n\n",
-                    fieldContentBlock.getLineStart(), fieldContentBlock), -1);
+            throw new ParseException(this.getLocation() +
+                    String.format("Could not parse record's field: %s", fieldContent));
         }
     }
 
-    public String parseValue(ParseBlock valueBlock) throws ParseException {
+    private String parseValue(String valueContent) throws ParseException {
         StringBuilder output = new StringBuilder();
-        Pattern wordPattern = Pattern.compile("(?<word>(\"[^,|\"]+\"|\\w+))(\\s#\\s(?<tail>.+))?");
-        Matcher wordMatcher = wordPattern.matcher(valueBlock.getContent());
+        Pattern wordPattern = Pattern.compile("(?<word>(\"[^,|\"]+\"|\\w+))(\\s*#\\s*(?<tail>.+))?");
+        Matcher wordMatcher = wordPattern.matcher(valueContent);
 
         while (wordMatcher.find()) {
             String word = wordMatcher.group("word");
@@ -44,8 +51,7 @@ public class FieldParser extends WarningHandler {
                 if (stringVars.containsKey(word.toUpperCase()))
                     output.append(stringVars.get(word.toUpperCase()));
                 else
-                    throw new ParseException(String.format("Line %d\nVariable %s not found!",
-                            valueBlock.getLineStart(), word), -1);
+                    throw new ParseException(String.format("Variable %s not found!", word));
             }
 
             if (wordMatcher.group("tail") != null) {

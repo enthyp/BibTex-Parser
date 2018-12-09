@@ -1,6 +1,7 @@
 package bibtex_search.bib_parser;
 
-import java.text.ParseException;
+import org.apache.commons.cli.ParseException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -23,15 +24,35 @@ import java.util.regex.Pattern;
  * as it contains appropriate information about the issue location.
  */
 public abstract class WarningHandler {
-    // TODO: add interfaces to parser classes! SOLID mnemonic! Factory class. Dependency Injection.
     /* The number the first line of given string had in the original input .bib file. */
     private int lineOffset;
 
     /* Indices of starting characters of subsequent lines of given string. */
     private ArrayList<Integer> lineBeginnings = new ArrayList<Integer>() {{ add(0); }};
 
-    private void handle(ParseException exc) {
 
+    /**
+     * This is the default way of handling exceptions from lower level parsers.
+     * They indicate that lower level object was unable to return it's result.
+     * In most cases that's not a problem (e.g. a record possibly can lack some fields).
+     * @param exc a localised exception from a lower level parser
+     */
+    protected void handle(ParseException exc) {
+        System.out.println(exc.getMessage() + "\n");
+    }
+
+    protected String getLocation() {
+        int startLine = lineOffset;
+        int endLine = lineOffset + lineBeginnings.size() - 1;
+        String errMsg;
+
+        if (startLine < endLine) {
+            errMsg = String.format("WARNING: Lines %d-%d\n", startLine, endLine);
+        } else {
+            errMsg = String.format("WARNING: Line %d\n", startLine);
+        }
+
+        return errMsg;
     }
 
     /**

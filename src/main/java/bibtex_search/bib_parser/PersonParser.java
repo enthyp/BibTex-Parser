@@ -1,8 +1,8 @@
 package bibtex_search.bib_parser;
 
 import bibtex_search.bib_parser.record.Person;
+import org.apache.commons.cli.ParseException;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -13,30 +13,29 @@ public class PersonParser extends WarningHandler {
         UPPER, LOWER, UNDETERMINED;
     }
 
-    public Person parse(ParseBlock personData) throws ParseException {
-        int commaCount = personData.getContent().split(",", -1).length - 1;
-        String authorString = personData.getContent();
+    public Person parse(String personString) throws ParseException {
+        int commaCount = personString.split(",", -1).length - 1;
         Person person;
 
         try {
             switch (commaCount) {
                 case 0:
-                    person = parse1st(authorString);
+                    person = parse1st(personString);
                     break;
 
                 case 1:
-                    person = parse2nd(authorString);
+                    person = parse2nd(personString);
                     break;
 
                 case 2:
-                    person = parse3rd(authorString);
+                    person = parse3rd(personString);
                     break;
 
                 default:
-                    throw new ParseException("\nUnknown person signature!", -1);
+                    throw new ParseException(this.getLocation() + "Unknown person signature!");
             }
-        } catch (ParseException e) {
-            throw new ParseException(String.format("Line %d\n", personData.getLineStart()) + e.getMessage(), -1);
+        } catch (ParseException exc) {
+            throw new ParseException(this.getLocation() + exc.getMessage());
         }
 
         return person;
@@ -145,7 +144,14 @@ public class PersonParser extends WarningHandler {
     public String[] splitIntoWords(String text) throws ParseException {
         ArrayList<String> words = new ArrayList<>();
         for (int position = 0; position < text.length();) {
-            int wordEnd = passWord(text, position);
+            int wordEnd;
+
+            try {
+                wordEnd = passWord(text, position);
+            } catch (ParseException exc) {
+                throw new ParseException(this.getLocation() + exc.getMessage());
+            }
+
             words.add(text.substring(position, wordEnd));
             position = wordEnd;
             while (position < text.length() && Character.isWhitespace(text.charAt(position)))
@@ -175,10 +181,11 @@ public class PersonParser extends WarningHandler {
                         count++;
                     else if (c == ']')
                         count--;
+                    /* Invariant: c = number of unmatched brackets within text[0..i] */
                 }
 
                 if (count > 0) {
-                    throw new ParseException("Brackets in field 'author' don't match!", -1);
+                    throw new ParseException("Brackets in field 'author' don't match!");
                 }
             }
             i++;
@@ -190,8 +197,7 @@ public class PersonParser extends WarningHandler {
     /**
      *
      * @param word String of consecutive non-white characters
-     * @return
-     * @throws ParseException
+     * @return what case the word "starts with" (BibTeX manner)
      */
     private Case startsWith(String word) throws ParseException {
         for (int i = 0; i < word.length(); i++) {
@@ -209,7 +215,7 @@ public class PersonParser extends WarningHandler {
                 }
 
                 if (count > 0) {
-                    throw new ParseException("Brackets in field 'author' don't match!", -1);
+                    throw new ParseException("Brackets in field 'author' don't match!");
                 }
             } else if (Character.isLetter(c)) {
                 return Character.isUpperCase(c) ? Case.UPPER : Case.LOWER;

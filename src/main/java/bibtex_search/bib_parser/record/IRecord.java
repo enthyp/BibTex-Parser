@@ -7,5 +7,4 @@ public interface IRecord {
     RecordType getType();
     String getKey();
     Map<String, Set<Person>> getPeople();
-    Map<String, String> getFields();
 }

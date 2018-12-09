@@ -3,11 +3,11 @@ package bibtex_search.bib_parser;
 import bibtex_search.bib_parser.record.IRecord;
 import bibtex_search.bib_parser.record.Record;
 import bibtex_search.bib_parser.record.RecordType;
+import org.apache.commons.cli.ParseException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,53 +65,48 @@ public class BibParser extends WarningHandler implements IBibParser {
             String category = recordMatcher.group("category").toUpperCase();
             String content = recordMatcher.group("content");
             int recordStart = this.getLineNumber(recordMatcher.start());
-            int recordEnd = this.getLineNumber(recordMatcher.end() - 1);
-            ParseBlock contentBlock = new ParseBlock(recordStart, recordEnd, content);
 
             /* Only process actual categories and String variable declarations. */
             if (RecordType.names.contains(category)) {
                 /* Record encountered. */
-                parseRecord(category, contentBlock);
+                parseRecord(recordMatcher.group(), recordStart);
             } else if (category.equals("STRING")) {
                 /* String variable declaration encountered. */
-                parseStringVar(contentBlock);
+                parseStringVar(content, recordStart);
             }
         }
     }
 
-
-
-    /* --------------------------- PRIVATES ---------------------------- */
-
     /**
      *
-     * @param category name of the record category
-     * @param recordBlock contains contents of the record and its position
+     * @param recordContent record's string representation
+     * @param recordStart index of the first character of the record's representation
      */
-    private void parseRecord(String category, ParseBlock recordBlock) {
+    private void parseRecord(String recordContent, int recordStart) {
         RecordParser recordParser = new RecordParser(stringVars);
-        recordParser.setLineBeginnings(recordBlock.getContent(), recordBlock.getLineStart());
+        recordParser.setLineBeginnings(recordContent, recordStart);
         try {
-            Record result = recordParser.parseRecord(category, recordBlock);
+            Record result = recordParser.parseRecord(recordContent);
             /* Only adds new entries. */
             records.add(result);
-        } catch (ParseException e) {
-            System.out.println("WARNING: " + e.getMessage());
+        } catch (ParseException exc) {
+            this.handle(exc);
         }
     }
 
     /**
      *
-     * @param varBlock contains variable definition
+     * @param varContent string variable definition
+     * @param varStart index of the first character of the variable's definition
      */
-    private void parseStringVar(ParseBlock varBlock) {
+    private void parseStringVar(String varContent, int varStart) {
         FieldParser varParser = new FieldParser(stringVars);
-        varParser.setLineBeginnings(varBlock.getContent(), varBlock.getLineStart());
+        varParser.setLineBeginnings(varContent, varStart);
         try {
-            Pair stringVar = varParser.parse(varBlock);
+            Pair stringVar = varParser.parse(varContent);
             stringVars.put(stringVar.getFirst().toUpperCase(), stringVar.getSecond());
-        } catch (ParseException e) {
-            System.out.println("WARNING: " + e.getMessage());
+        } catch (ParseException exc) {
+            this.handle(exc);
         }
     }
 

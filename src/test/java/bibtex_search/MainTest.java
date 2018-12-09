@@ -14,7 +14,6 @@ public class MainTest {
         String filePath = file.getAbsolutePath();
         String categories = "unpublished book";
 
-        // TODO: if criterion is not recognized - a warning must be printed.
         Main.main(new String[] {"-f", filePath, "-c", categories, "book"});
     }
 
@@ -25,7 +24,6 @@ public class MainTest {
         String filePath = file.getAbsolutePath();
         String authors = "Manmaker";
 
-        // TODO: if author is not found - a warning should be printed?
         Main.main(new String[] {"-f", filePath, "-a", authors, "Knuth"});
     }
 
@@ -35,7 +33,6 @@ public class MainTest {
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
 
-        // TODO: if author is not found - a warning should be printed?
         Main.main(new String[] {"-f", filePath, "-a", "Manmaker", "Knuth", "-c", "manual", "inboOk"});
     }
 }

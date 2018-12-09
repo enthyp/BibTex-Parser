@@ -3,24 +3,42 @@ package bibtex_search.bib_parser;
 import bibtex_search.bib_parser.record.Person;
 import bibtex_search.bib_parser.record.Record;
 import bibtex_search.bib_parser.record.RecordType;
+import org.apache.commons.cli.ParseException;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RecordParser extends WarningHandler {
+    // TODO: this slightly breaks (?) the single responsibility principle (large methods).
     // TODO: empty field values don't count!!!
     private Map<String, String> stringVars;
     public RecordParser(Map<String, String> stringVars) {
         this.stringVars = stringVars;
     }
 
-    public Record parseRecord(String category, ParseBlock recordBlock) throws ParseException {
-        String foundKey = parseKey(recordBlock);
-        Map<String, Set<Person>> foundPeople = parsePeople(recordBlock);
-        Map<String, String> foundFields = parseFields(recordBlock, category);
+    public Record parseRecord(String recordContent) throws ParseException {
+        /* Break down the record again (to decouple from BibParser class). */
+        String regex = "@(?<category>\\w+)\\{(?<content>.+?)}";
+        Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
+        Matcher recordMatcher = recordPattern.matcher(recordContent);
+        recordMatcher.find();
+        String category = recordMatcher.group("category").toUpperCase();
+        String content = recordMatcher.group("content");
+
+        /* Get record's key. */
+        String foundKey;
+        try {
+            foundKey = parseKey(content);
+        } catch (ParseException exc) {
+            /* If failed to do so - report a faulty record. */
+            throw new ParseException(this.getLocation() + exc.getMessage());
+        }
+
+        /* Get record's fields - people (authors, editors, etc.) and other. */
+        Map<String, Set<Person>> foundPeople = parsePeople(content);
+        Map<String, String> foundFields = parseFields(content);
 
         /* Check for mandatory and ignored fields. */
         Set<String> mandatory =  new HashSet<>(mandatoryFields.get(RecordType.valueOf(category)));
@@ -63,10 +81,9 @@ public class RecordParser extends WarningHandler {
                 foundFields.entrySet().removeIf(field -> !found.contains(field.getKey()));
             } else {
                 /* Report a faulty record. */
-                throw new ParseException(String.format("Lines %d-%d\nRecord lacks mandatory fields: %s\n",
-                        recordBlock.getLineStart(),
-                        recordBlock.getLineEnd(),
-                        mandatory.stream().collect(Collectors.joining(", "))), -1);
+                throw new ParseException(this.getLocation() +
+                        String.format("Record lacks mandatory fields: %s\n",
+                        mandatory.stream().collect(Collectors.joining(", "))));
             }
         }
 
@@ -75,34 +92,32 @@ public class RecordParser extends WarningHandler {
 
     /**
      *
-     * @param recordBlock object with record contents
-     * @return String with record's key
+     * @param content record's body
+     * @return record's key
      */
-    private String parseKey(ParseBlock recordBlock) throws ParseException {
-        Pattern keyPattern = Pattern.compile("^(?<key>[^,|\\s]+),");
-        Matcher keyMatcher = keyPattern.matcher(recordBlock.getContent());
+    private String parseKey(String content) throws ParseException {
+        Pattern keyPattern = Pattern.compile("^(?<key>[^,|=\\s]+),");
+        Matcher keyMatcher = keyPattern.matcher(content);
 
         if (keyMatcher.find()) {
             return keyMatcher.group("key");
         } else {
-            throw new ParseException(String.format("Line %d\nError parsing record's key: %s\n\n",
-                    recordBlock.getLineStart(), recordBlock), -1);
+            throw new ParseException("Error parsing record's key!");
         }
     }
 
     /**
      *
-     * @param recordBlock object with record contents
+     * @param content record's body
      * @return map describing encountered fields
      */
-    private Map<String, String> parseFields(ParseBlock recordBlock, String category) {
+    private Map<String, String> parseFields(String content) {
         Map<String, String> fields = new LinkedHashMap<>();
-        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|=]+\\s=\\s[^,|]+)(,|$)");
-        Matcher fieldMatcher = fieldPattern.matcher(recordBlock.getContent());
+        Pattern fieldPattern = Pattern.compile("\\s*(?<field>[^,|=]+\\s*=\\s*[^,|=]+)(,|$)");
+        Matcher fieldMatcher = fieldPattern.matcher(content);
 
         while (fieldMatcher.find()) {
             int fieldStart = this.getLineNumber(fieldMatcher.start());
-            int fieldEnd = this.getLineNumber(fieldMatcher.end());
             /* `trim` method is used to get rid of trailing whitespace. */
             String fieldContent = fieldMatcher.group("field").trim();
 
@@ -110,17 +125,13 @@ public class RecordParser extends WarningHandler {
             fieldParser.setLineBeginnings(fieldContent, fieldStart);
 
             try {
-                Pair result = fieldParser.parse(new ParseBlock(fieldStart, fieldEnd, fieldContent));
+                Pair result = fieldParser.parse(fieldContent);
                 /* Only retain the first occurrence. */
-                if (!fields.containsKey(result.getFirst().toLowerCase())
-                        && !result.getSecond().equals("")
-                        && (alternatives.get(RecordType.valueOf(category)) == null
-                                || !fields.containsKey(alternatives.get(RecordType.valueOf(category))
-                                    .get(result.getFirst().toLowerCase())))) {
+                if (!fields.containsKey(result.getFirst().toLowerCase()) && !result.getSecond().equals("")) {
                     fields.put(result.getFirst().toLowerCase(), result.getSecond());
                 }
-            } catch (ParseException e) {
-                System.out.println("WARNING: " + e.getMessage());
+            } catch (ParseException exc) {
+                this.handle(exc);
             }
         }
 
@@ -129,13 +140,14 @@ public class RecordParser extends WarningHandler {
 
     /**
      *
-     * @param recordBlock object with record contents
-     * @return personal data of all found people (authors, editors...)
+     * @param content record's body
+     * @return personal data of all found people (authors, editors, etc.)
      */
-    private Map<String, Set<Person>> parsePeople(ParseBlock recordBlock) {
-        Pattern personPattern = Pattern.compile("(?<type>\\w+)\\s+=\\s+\"(?<person>[^|\"]+)\"\\|",
+    private Map<String, Set<Person>> parsePeople(String content) {
+        Pattern personPattern = Pattern.compile("(?<type>\\w+)\\s*=\\s*\"(?<person>[^|\"]+)\"\\|",
                 Pattern.CASE_INSENSITIVE);
-        Matcher personMatcher = personPattern.matcher(recordBlock.getContent());
+        Matcher personMatcher = personPattern.matcher(content);
+        /* A map from person type (e.g. editor) to all the people of this type in the record. */
         Map<String, Set<Person>> results = new LinkedHashMap<>();
 
         while (personMatcher.find()) {
@@ -143,11 +155,10 @@ public class RecordParser extends WarningHandler {
 
             try {
                 /* TODO: test multiline people. */
-                String peopleString = personMatcher.group("person").trim();
                 String peopleType = personMatcher.group("type").toLowerCase();
+                String peopleString = personMatcher.group("person").trim();
 
                 int personStart = this.getLineNumber(personMatcher.start());
-                int personEnd = this.getLineNumber(personMatcher.end());
                 personParser.setLineBeginnings(peopleString, personStart);
 
                 Set<Person> partialResult = new LinkedHashSet<>();
@@ -162,7 +173,7 @@ public class RecordParser extends WarningHandler {
                     if (i < j) {
                         String personString = Arrays.stream(Arrays.copyOfRange(words, i, j))
                                 .collect(Collectors.joining(" "));
-                        Person person = personParser.parse(new ParseBlock(personStart, personEnd, personString));
+                        Person person = personParser.parse(personString);
                         person.setType(peopleType);
                         partialResult.add(person);
                     }
@@ -175,6 +186,7 @@ public class RecordParser extends WarningHandler {
                     results.put(peopleType, partialResult);
                 }
             } catch (ParseException e) {
+                /* `PersonParser.splitIntoWords` and `PersonParser.parse` provide location details already. */
                 System.out.println("WARNING: " + e.getMessage());
             }
         }

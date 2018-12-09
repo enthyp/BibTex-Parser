@@ -1,13 +1,12 @@
 package bibtex_search.bib_parser;
 
-import bibtex_search.bib_parser.record.RecordType;
+import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,6 @@ public class RecordParserTest {
         RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
             put("VAR1", "wazzup ");
         }});
-        System.out.println(recordParser.parseRecord("MISC", new ParseBlock(0, 0,fileContent)));
+        System.out.println(recordParser.parseRecord(fileContent));
     }
 }

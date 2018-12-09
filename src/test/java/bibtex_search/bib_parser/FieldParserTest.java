@@ -1,13 +1,12 @@
 package bibtex_search.bib_parser;
 
+import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,6 @@ public class FieldParserTest {
         FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
             put("var1", "mofo as fuck");
         }});
-        System.out.println(fieldParser.parse(new ParseBlock(0, 0, fileContent)));
+        System.out.println(fieldParser.parse(fileContent));
     }
 }
