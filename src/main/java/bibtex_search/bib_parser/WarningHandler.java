@@ -11,17 +11,6 @@ import java.util.regex.Pattern;
  * This class provides a way to print warnings to std output along with boundaries of the
  * block of code that caused a problem.
  *
- * As a general side-note: the processing of warnings is conducted as follows.
- *   Every object responsible for parsing a block of text (full record, individual field, string
- * variable definition) has one method that does the parsing.
- *   The call to that method is always enclosed in a try-catch block in a method of an object
- * responsible for initialization of the parser (a parser of the super-block of text usually).
- *   Inner parser always tries to handle it's own warnings (do the printing, not propagate anymore
- * and return a useful result).
- *   However, when a result cannot be returned due to a major malfunction (record lacking mandatory
- * fields for example), a ParseException is thrown for the super-parser to handle.
- *   Every time, when catching a ParseException in a WarningHandler, it's `handle` method is called,
- * as it contains appropriate information about the issue location.
  */
 public abstract class WarningHandler {
     /* The number the first line of given string had in the original input .bib file. */
