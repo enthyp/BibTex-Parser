@@ -12,6 +12,13 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+// TODO: use assertions.
+// TODO: test lack of mandatory fields.
+// TODO: test optional fields.
+// TODO: test cross-references.
+// TODO: test matching balanced blocks.
+// TODO: test lacking commas, vertical bars, non-matching braces, braces outside quotation marks etc.
+
 public class RecordParserTest {
 
     @Test

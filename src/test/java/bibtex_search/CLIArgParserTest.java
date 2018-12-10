@@ -1,12 +1,12 @@
 package bibtex_search;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.*;
+
+// TODO: use assertions.
+// TODO: test for unknown categories, no categories, proper categories.
 
 public class CLIArgParserTest {
 

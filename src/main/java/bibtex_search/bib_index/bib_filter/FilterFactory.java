@@ -6,6 +6,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+// TODO: add tests - filters/categories correct, wrong, single, multiple, none.
+
 /**
  * Factory class used to create Filter objects for given criteria and ISearchCriterion objects
  * for given criteria names.

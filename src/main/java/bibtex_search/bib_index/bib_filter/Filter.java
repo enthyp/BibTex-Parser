@@ -5,6 +5,8 @@ import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.Set;
 
+// TODO: add general filters for exact match with chosen field, for inclusion, interval maybe.
+
 /**
  * A filter object used to retain only matching IRecord instances. It is specific for a set
  * of IRecord instances and for a type of search criterion, e.g. search by author's last name.
@@ -18,7 +20,16 @@ public abstract class Filter {
      * filtering later on, even when the criteria change.
      * @param records records for which data structure is built
      */
-    public Filter(Set<IRecord> records) {}
+    public Filter(Set<IRecord> records) {
+        this.setup();
+        for (IRecord record : records) {
+            this.addRecord(record);
+        }
+    }
+
+    protected void setup() {}
+
+    protected void addRecord(IRecord record) {}
 
     /**
      *

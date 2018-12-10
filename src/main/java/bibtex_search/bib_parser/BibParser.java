@@ -13,6 +13,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+// TODO: add cross-references handling.
+// TODO: add a method to match balanced character blocks
+// ( with list of admissible characters as a parameter)
+// TODO: then use that method in `this.matchEntries` instead of regex.
+// TODO: use interfaces instead of implementations of lower-level parsers.
+
 public class BibParser extends WarningHandler implements IBibParser {
 
     private Set<IRecord> records = new LinkedHashSet<>();
@@ -45,13 +51,17 @@ public class BibParser extends WarningHandler implements IBibParser {
      * @param file File object for input .bib file
      */
     public void parse(File file) throws IOException {
+        /* Check if file exists. */
+        if (!file.exists())
+            throw new FileNotFoundException(String.format("Input file '%s' not found! ", file.getName()));
+
+        /* Read all of the file contents at once. */
         String fileContent;
         try {
-            /* Read all of the file contents at once. */
             fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                     .collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new IOException("Error reading the input file! " + e.getMessage());
+        } catch (IOException exc) {
+            throw new IOException("IO exception occured! " + exc.getMessage());
         }
 
         /* Set up line beginnings. */

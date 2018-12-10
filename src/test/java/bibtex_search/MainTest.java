@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import java.io.File;
 
+// TODO: use assertions (add expected results to appropriate files).
+// TODO: check different cases: interplay of options, what if some (or all of them) are wrong etc.
+
 public class MainTest {
     @Test
     public void mainTestCategories() {
@@ -11,8 +14,7 @@ public class MainTest {
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
         String categories = "unpublished book";
-
-        Main.main(new String[] {"-f", filePath, "-c", categories, "book"});
+        Main.main(new String[] {"-f", filePath, "-s", "book"});
     }
 
     @Test

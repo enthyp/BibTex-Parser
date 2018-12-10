@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+// TODO: test empty field values.
+// TODO: test variable substitution.
+// TODO: test matching balanced blocks.
+// TODO: test lack of quotation marks, commas etc.
+
 public class FieldParserTest {
 
     @Test

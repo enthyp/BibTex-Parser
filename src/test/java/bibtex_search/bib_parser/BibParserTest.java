@@ -12,6 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+// TODO: use assertions.
+// TODO: test case independence for categories.
+// TODO: test general correctness - parsing entire file without additional criteria.
 
 public class BibParserTest {
     @Test
@@ -22,8 +25,6 @@ public class BibParserTest {
         BibParser bibParser = new BibParser();
         bibParser.parse(file);
     }
-
-    // TODO: all case vs caseless, like Person = author and so on!
 
     @Test
     public void lineEndIndexTest() throws IOException {

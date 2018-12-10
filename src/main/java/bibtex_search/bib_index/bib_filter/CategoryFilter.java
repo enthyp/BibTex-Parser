@@ -15,20 +15,29 @@ public class CategoryFilter extends Filter {
     /**
      * A map from categories to keys of appropriate records.
      */
-    private Map<RecordType, Set<String>> categoryToKey = new HashMap<>();
+    private Map<RecordType, Set<String>> categoryToKey;
 
     public CategoryFilter(Set<IRecord> records) {
         super(records);
-
-        for (IRecord record : records) {
-            String key = record.getKey();
-            RecordType type = record.getType();
-
-            if (!categoryToKey.containsKey(type))
-                categoryToKey.put(type, new HashSet<>());
-            categoryToKey.get(type).add(key);
-        }
     }
+
+    @Override
+    protected void setup() {
+        this.categoryToKey = new HashMap<>();
+    }
+
+    @Override
+    protected void addRecord(IRecord record) {
+        String key = record.getKey();
+        RecordType type = record.getType();
+
+        if (!categoryToKey.containsKey(type)) {
+            categoryToKey.put(type, new HashSet<>());
+        }
+
+        categoryToKey.get(type).add(key);
+    }
+
 
     @Override
     public ISearchResults apply(ISearchResults currentResults, ISearchCriterion criterion) {

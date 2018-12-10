@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+// TODO: use assertions.
+// TODO: test line number correctness for warnings from field, author, record level
+// with different reasons for the warning.
+
 public class WarningHandlerTest {
     @Test
     public void getLineNumberTest() throws NoSuchMethodException, InvocationTargetException,

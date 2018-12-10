@@ -10,9 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+// TODO: add multiple alternatives option.
+
 public class RecordParser extends WarningHandler {
-    // TODO: this slightly breaks (?) the single responsibility principle (large methods).
-    // TODO: empty field values don't count!!!
+
     private Map<String, String> stringVars;
     public RecordParser(Map<String, String> stringVars) {
         this.stringVars = stringVars;
@@ -63,8 +64,6 @@ public class RecordParser extends WarningHandler {
             /* Remove non-admissible fields. */
             foundFields.entrySet().removeIf(field -> !found.contains(field.getKey()));
         } else {
-            // TODO: if we want multiple alternatives - must have a set as the map value
-            // and iterate over these sets!!!
             /* Check if alternative fields appeared. */
             Set<String> alternativeMandatory = mandatory.stream()
                     .map(e -> (alternatives.containsKey(RecordType.valueOf(category)) ?

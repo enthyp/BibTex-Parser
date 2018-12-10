@@ -18,9 +18,7 @@ public class CLIArgParser implements ICLIArgParser {
     private String bibFilePath;
     private Map<String, String[]> criteria;
 
-    // TODO: check date extension!
     public void parseArgs(String[] args) throws ParseException {
-        // TODO: additional option to suppress warnings?
         Option filePath = Option.builder("f")
                 .longOpt("filepath")
                 .hasArg()

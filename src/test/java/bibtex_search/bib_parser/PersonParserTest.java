@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
+// TODO: check the suite.
+
 public class PersonParserTest {
 
     @Test
