@@ -11,20 +11,26 @@ import java.util.Set;
 
 public class YearFilter extends Filter {
 
-    private Map<String, Set<String>> yearToKey = new HashMap<>();
+    private Map<String, Set<String>> yearToKey;
 
     public YearFilter(Set<IRecord> records) {
         super(records);
-        for (IRecord record : records) {
-            if (record.getFields().containsKey("year")) {
-                String key = record.getKey();
-                String year = record.getFields().get("year");
+    }
 
-                if (!yearToKey.containsKey(year))
-                    yearToKey.put(year, new HashSet<>());
-                yearToKey.get(year).add(key);
-            }
+    @Override
+    protected void setup() {
+        this.yearToKey = new HashMap<>();
+    }
 
+    @Override
+    protected void addRecord(IRecord record) {
+        if (record.getFields().containsKey("year")) {
+            String key = record.getKey();
+            String year = record.getFields().get("year");
+
+            if (!yearToKey.containsKey(year))
+                yearToKey.put(year, new HashSet<>());
+            yearToKey.get(year).add(key);
         }
     }
 
