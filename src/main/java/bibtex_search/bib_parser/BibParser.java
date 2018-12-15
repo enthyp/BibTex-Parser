@@ -14,40 +14,39 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 // TODO: add cross-references handling.
-// TODO: add a method to match balanced character blocks
-// ( with list of admissible characters as a parameter)
+// TODO: add a method to match balanced character blocks.
+// (with list of admissible characters as a parameter)
 // TODO: then use that method in `this.matchEntries` instead of regex.
 // TODO: use interfaces instead of implementations of lower-level parsers.
 
+/**
+ * A parser of .bib files.
+ * This implementation is capable of parsing .bib files simplified
+ * in accordance with specification (not provided here).
+ */
 public class BibParser extends WarningHandler implements IBibParser {
 
+    /**
+     * All entries found in the input file.
+     */
     private Set<IRecord> records = new LinkedHashSet<>();
+
+    /**
+     * A map between a string variable name and its value.
+     */
     private Map<String, String> stringVars = new HashMap<>();
 
     public Set<IRecord> getRecords() {
         return this.records;
     }
 
-    /**
-     * {@inheritDoc}
-     * Here it is a wrapper method provided to add testability of actual parsing.
-     */
     public void parse(String filePath) throws IOException {
-        File file = getFile(filePath);
+        File file = new File(filePath);
         parse(file);
     }
 
     /**
-     *
-     * @param filePath path to .bib file
-     * @return corresponding File object
-     */
-    private File getFile(String filePath) {
-        return new File(filePath);
-    }
-
-    /**
-     * Adds all records found in a file to `this.records` set.
+     * Adds all records found in a file to the `records` set.
      * @param file File object for input .bib file
      */
     public void parse(File file) throws IOException {
@@ -88,9 +87,10 @@ public class BibParser extends WarningHandler implements IBibParser {
     }
 
     /**
+     * Parses given record and adds it to `records` set.
      *
-     * @param recordContent record's string representation
-     * @param recordStart index of the first character of the record's representation
+     * @param recordContent record's string representation.
+     * @param recordStart index of the first character of the record's representation.
      */
     private void parseRecord(String recordContent, int recordStart) {
         RecordParser recordParser = new RecordParser(stringVars);
@@ -105,9 +105,10 @@ public class BibParser extends WarningHandler implements IBibParser {
     }
 
     /**
+     * Parses given variable declaration and adds it to `stringVars` map.
      *
-     * @param varContent string variable definition
-     * @param varStart index of the first character of the variable's definition
+     * @param varContent string variable definition.
+     * @param varStart index of the first character of the variable's definition.
      */
     private void parseStringVar(String varContent, int varStart) {
         FieldParser varParser = new FieldParser(stringVars);
@@ -131,5 +132,13 @@ public class BibParser extends WarningHandler implements IBibParser {
         Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
 
         return recordPattern.matcher(fileContent);
+    }
+
+    /**
+     * Runs over all found entries and checks if they have all mandatory fields (including cross-refs).
+     *
+     */
+    private void validate() {
+
     }
 }

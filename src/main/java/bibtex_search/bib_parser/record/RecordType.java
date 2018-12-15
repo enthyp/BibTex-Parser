@@ -22,5 +22,4 @@ public enum RecordType {
             .stream(RecordType.values())
             .map(RecordType::name)
             .collect(Collectors.toSet()));
-
 }

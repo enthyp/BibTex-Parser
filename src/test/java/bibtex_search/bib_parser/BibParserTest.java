@@ -1,13 +1,12 @@
 package bibtex_search.bib_parser;
 
+import bibtex_search.bib_parser.record.IRecord;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,6 +16,13 @@ import java.util.stream.Collectors;
 // TODO: test general correctness - parsing entire file without additional criteria.
 
 public class BibParserTest {
+
+    @Test(expected = FileNotFoundException.class)
+    public void fileNotExistsTest() throws IOException {
+        BibParser bibParser = new BibParser();
+        bibParser.parse("nonexistentfile");
+    }
+
     @Test
     public void parseFileTest() throws IOException {
         String fileName = "/xampl_simplified.bib";
@@ -24,6 +30,13 @@ public class BibParserTest {
 
         BibParser bibParser = new BibParser();
         bibParser.parse(file);
+
+        Set<IRecord> records = bibParser.getRecords();
+        StringBuilder builder = new StringBuilder();
+        for (IRecord record : records)
+            builder.append(record.toString());
+
+        System.out.println(builder.toString());
     }
 
     @Test

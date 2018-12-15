@@ -3,32 +3,123 @@ package bibtex_search.bib_parser;
 import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
-
-// TODO: test empty field values.
-// TODO: test variable substitution.
-// TODO: test matching balanced blocks.
-// TODO: test lack of quotation marks, commas etc.
 
 public class FieldParserTest {
 
     @Test
-    public void parseTest() throws IOException, ParseException {
-        String fileName = "/xampl_var.bib";
-        File file = new File(this.getClass().getResource(fileName).getFile());
-        String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
-                .collect(Collectors.joining("\n"));
-
+    public void singleKnownVarTest() throws ParseException {
+        String fieldString = "blob_2 = \nbzzt";
         FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
-            put("var1", "so good");
+            put("bzzt", "Well done");
         }});
-        System.out.println(fieldParser.parse(fileContent));
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void singleUnknownVarTest() throws ParseException {
+        String fieldString = "blob_2 = bzzt";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test
+    public void multipleVarTest() throws ParseException {
+        String fieldString = "blob_2 = bzzt # \nbob";
+        FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
+            put("bzzt", "Well done");
+            put("bob", " mate");
+        }});
+        fieldParser.parse(fieldString);
+    }
+
+    @Test
+    public void multipleVarPlusTextTest() throws ParseException {
+        FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
+            put("bzzt", "Well done");
+            put("bob", " mate");
+            put("zob", " gr8 b8");
+        }});
+        fieldParser.parse("bob = bob # \"\n bait \"#bzzt");
+        fieldParser.parse("blob_2 = \"don \" #bzzt # bob#\"  ms#dmms\"");
+        fieldParser.parse("mob = \" Loads \"# bzzt # \"\n\" # bob # zob");
+    }
+
+    @Test(expected = ParseException.class)
+    public void multipleVarPlusTextIncorrectTest() throws ParseException {
+        FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
+            put("bzzt", "Well done");
+            put("bob", " mate");
+            put("zob", " gr8 b8");
+        }});
+        fieldParser.parse("bob = bob 1 # \" bait \"#bzzt");
+    }
+
+    @Test(expected = ParseException.class)
+    public void multipleVarPlusTextIncorrect2Test() throws ParseException {
+        FieldParser fieldParser = new FieldParser(new HashMap<String, String>() {{
+            put("bzzt", "Well done");
+            put("bob", " mate");
+            put("zob", " gr8 b8");
+        }});
+        fieldParser.parse("bob = bob * # \" bait \"# bzzt");
+    }
+
+
+    @Test
+    public void parseCorrectFieldTest() throws ParseException {
+        String fieldString = "blob_2 = \" kjsdn21**\n\t [[[] {} xDDD!1 a\" # \"gooo\"";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void emptyValueTest() throws ParseException {
+        String fieldString = "blob = ";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    // TODO: empty value must be parsed, but should not be allowed for mandatory fields (Validator).
+    @Test
+    public void emptyValueQuotesTest() throws ParseException {
+        String fieldString = "blob = \"\"";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void nonWordCharacterInNameTest() throws ParseException {
+        String fieldString = "s+tockey = \"OX[\\singleletter[stoc]]\"";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void whitespaceInNameTest() throws ParseException {
+        String fieldString = "s tockey = \"OX[\\singleletter[stoc]]\"";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void noQuotationMarkInValueTest() throws ParseException {
+        String fieldString = "stockey12 = \"OX[\\singleletter[stoc]]";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void nonWordCharacterInValueTest() throws ParseException {
+        String fieldString = "stockey12 = bzz*t";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
+    }
+
+    @Test(expected = ParseException.class)
+    public void soWrongTest() throws ParseException {
+        String fieldString = "stockey12 = \"sdf\" \"f\"";
+        FieldParser fieldParser = new FieldParser(new HashMap<>());
+        fieldParser.parse(fieldString);
     }
 }

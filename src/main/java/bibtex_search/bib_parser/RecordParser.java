@@ -11,9 +11,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 // TODO: add multiple alternatives option.
+// TODO: decouple validation of records (mandatory fields) - so that unordered cross-refs are handled.
 
 public class RecordParser extends WarningHandler {
 
+    /**
+     * A map between a string variable name and its value.
+     */
     private Map<String, String> stringVars;
     public RecordParser(Map<String, String> stringVars) {
         this.stringVars = stringVars;

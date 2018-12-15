@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.*;
+
 // TODO: use assertions.
 // TODO: check multiline fields, repeating fields, empty values.
 

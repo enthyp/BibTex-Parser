@@ -13,13 +13,11 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
-// TODO: check the suite.
-
 public class PersonParserTest {
 
     @Test
-    public void parseTest() throws IOException, ParseException {
-        String[] fileNames = new String[] {"/xampl_auth.bib", "/first.bib", "/von.bib", "/last.bib", "/jr.bib"};
+    public void parseAllTest() throws IOException, ParseException {
+        String[] fileNames = new String[] {"/person_test/xampl_auth.bib", "/person_test/first.bib", "/person_test/von.bib", "/person_test/last.bib", "/person_test/jr.bib"};
         File[] files = new File[fileNames.length];
 
         for (int i = 0; i < fileNames.length; i++)
@@ -38,15 +36,12 @@ public class PersonParserTest {
             int j = 1;
             while ((lines[0] = readers[0].readLine()) != null) {
                 Person person = personParser.parse(lines[0]);
+                // Remove non-breaking whitespace!
                 for (int i = 1; i < lines.length; i++)
                     lines[i] = readers[i].readLine()
                             .replaceAll("^\\s+|\\s+$", "")
                             .replaceAll("(^\\h*)|(\\h*$)","");
 
-                System.out.println("Line " + j);
-                System.out.println(String.format("fst: %s\nvon: %s\nlast: %s\njr: %s", lines[1],
-                        lines[2], lines[3], lines[4]));
-                System.out.println("Person:\n" + person.contentString() + "\n");
                 if (j != 27 && j != 36) {
                     assertEquals(person.getFirst(), lines[1]);
                     assertEquals(person.getVon(), lines[2]);
@@ -60,20 +55,30 @@ public class PersonParserTest {
 
     @Test
     public void splitIntoWordsTest() throws IOException, ParseException {
-        String fileName = "/xampl_auth.bib";
+        String fileName = "/person_test/xampl_auth.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
+
+        String[][] expectedResults = new String[][]{{"AA", "BB"}, {"AA"}, {"AA", "bb"}, {"aa"},
+                {"AA", "bb", "CC"}, {"AA", "bb", "CC", "dd", "EE"}, {"AA", "1B", "cc", "dd"},
+                {"AA", "1b", "cc", "dd"}, {"AA", "[b]B", "cc", "dd"}, {"AA", "[b]b", "cc", "dd"},
+                {"AA", "[B]b", "cc", "dd"}, {"AA", "[B]B", "cc", "dd"}, {"AA", "\\BB[b]", "cc", "dd"},
+                {"AA", "\\bb[b]", "cc", "dd"}, {"AA", "[bb]", "cc", "DD"}, {"AA", "bb", "[cc]", "DD"},
+                {"AA", "[bb]", "CC"}, {"bb", "CC,", "AA"}, {"bb", "CC,", "aa"}, {"bb", "CC", "dd", "EE,", "AA"},
+                {"bb,", "AA"}, {"BB,"}, {"bb", "CC,XX,", "AA"}, {"bb", "CC,xx,", "AA"}, {"BB,,", "AA"},
+                {"Paul", "\\'Emile", "Victor"}, {"Paul", "[\\'E]mile", "Victor"}, {"Paul", "\\'emile", "Victor"},
+                {"Paul", "[\\'e]mile", "Victor"}, {"Victor,", "Paul", "\\'Emile"}, {"Victor,", "Paul", "[\\'E]mile"},
+                {"Victor,", "Paul", "\\'emile"}, {"Victor,", "Paul", "[\\'e]mile"}, {"Dominique", "Galouzeau", "de", "Villepin"},
+                {"Dominique", "[G]alouzeau", "de", "Villepin"}, {"Galouzeau", "de", "Villepin,", "Dominique"}};
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             PersonParser personParser = new PersonParser();
 
-            int i = 1;
+            int i = 0;
             while ((line = br.readLine()) != null) {
-                System.out.println("Line " + i);
-                for (String word: personParser.splitIntoWords(line))
-                    System.out.println(word + " " + word.length());
-
-                System.out.println("\n");
+                String[] words =  personParser.splitIntoWords(line);
+                for (int j = 0; j < words.length; j++)
+                    assertEquals(words[j], expectedResults[i][j]);
                 i++;
             }
         }
@@ -84,6 +89,16 @@ public class PersonParserTest {
         Method method = PersonParser.class.getDeclaredMethod("startsWith", String.class);
         method.setAccessible(true);
         assertEquals(method.invoke(new PersonParser(), "[\\'E]mile").toString(), "LOWER");
+        assertEquals(method.invoke(new PersonParser(), "Emile").toString(), "UPPER");
+        assertEquals(method.invoke(new PersonParser(), "emile").toString(), "LOWER");
+        assertEquals(method.invoke(new PersonParser(), "[\\Emi][lee]").toString(), "UNDETERMINED");
+    }
+
+    @Test(expected = ParseException.class)
+    public void unbalancedTest() throws ParseException {
+        String block = "AA [dfs]fad], borg";
+        PersonParser personParser = new PersonParser();
+        personParser.parse(block);
     }
 }
 

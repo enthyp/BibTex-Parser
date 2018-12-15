@@ -11,20 +11,23 @@ public interface ICLIArgParser {
     /**
      * This method parses the input for the path to the input .bib file
      * and additional search criteria specified by a particular implementation.
-     * @param args command line arguments
+     * @param args command line arguments.
      */
     void parseArgs(String[] args) throws ParseException;
 
     /**
-     *
-     * @return just what was given as path to .bib file
+     * Return path to .bib file.
+     * @return command line argument containing path to .bib file.
      */
     String getBibFilePath();
 
     /**
-     *
-     * @return a map from criterion name (implementation specific!)
-     * to an array of values of that criterion we want to see in the search results
+     * Returns a map from a name of a criterion to an array of values of that criterion
+     * that are being looked for.
+     * E.g. the name could be "authors". The values would then be last names of authors
+     * whose publication are being looked for.
+     * If some criterion was not specified, then there is no map entry for it.
+     * @return a map from name of a criterion to array of values of that criterion.
      */
     Map<String, String[]> getCriteria();
 }

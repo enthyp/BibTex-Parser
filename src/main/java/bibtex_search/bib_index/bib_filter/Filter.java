@@ -6,6 +6,7 @@ import bibtex_search.bib_parser.record.IRecord;
 import java.util.Set;
 
 // TODO: add general filters for exact match with chosen field, for inclusion, interval maybe.
+// TODO: consider how to reduce code overhead with different filters and criteria.
 
 /**
  * A filter object used to retain only matching IRecord instances. It is specific for a set

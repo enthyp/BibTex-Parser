@@ -7,12 +7,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * A parser of people's names as specified in BibTeX standard.
+ */
 public class PersonParser extends WarningHandler {
 
+    /**
+     * Case of a word as specified in BibTeX standard.
+     */
     private enum Case {
         UPPER, LOWER, UNDETERMINED;
     }
 
+    /**
+     * Parse a string of characters that occurred as e.g. "author" field's value and return
+     * object representation as specified in BibTeX standard.
+     *
+     * @param personString given person name from .bib file.
+     * @return object representation of person's data.
+     */
     public Person parse(String personString) throws ParseException {
         int commaCount = personString.split(",", -1).length - 1;
         Person person;
@@ -41,6 +54,11 @@ public class PersonParser extends WarningHandler {
         return person;
     }
 
+    /**
+     * Parse the "First von Last" form as specified in BibTeX standard.
+     * @param personData given person name from .bib file.
+     * @return object representation of person's data.
+     */
     private Person parse1st(String personData) throws ParseException {
         String[] words = splitIntoWords(personData);
 
@@ -72,6 +90,11 @@ public class PersonParser extends WarningHandler {
         return new Person(first, last, von, "");
     }
 
+    /**
+     * Parse the "von Last, First" form as specified in BibTeX standard.
+     * @param personData given person name from .bib file.
+     * @return object representation of person's data.
+     */
     private Person parse2nd(String personData) throws ParseException {
         String[] blocks = personData.split(",", -1);
         String vonLastBlock = blocks[0];
@@ -103,6 +126,11 @@ public class PersonParser extends WarningHandler {
         return new Person(first, last, von, "");
     }
 
+    /**
+     * Parse the "von Last, Jr, First" form as specified in BibTeX standard.
+     * @param personData given person name from .bib file.
+     * @return object representation of person's data.
+     */
     private Person parse3rd(String personData) throws ParseException {
         String[] blocks = personData.split(",", -1);
         String vonLastBlock = blocks[0];
@@ -137,7 +165,7 @@ public class PersonParser extends WarningHandler {
     }
 
     /**
-     *
+     * Split given text into words, treating balanced bracket blocks as single characters.
      * @param text sequence of characters we want to split into words in BibTex manner
      * @return array of words
      */
@@ -162,7 +190,7 @@ public class PersonParser extends WarningHandler {
     }
 
     /**
-     *
+     * Jump over a word, treating balanced bracket blocks as single characters.
      * @param text sequence of characters we want to divide into words
      * @param start starting position of a word in the text (non-whitespace character)
      * @return last position of a word in the text + 1
@@ -172,6 +200,10 @@ public class PersonParser extends WarningHandler {
 
         while (i < text.length() && !Character.isWhitespace(text.charAt(i))) {
             // Eat balanced brackets block.
+            if (text.charAt(i) == ']') {
+                throw new ParseException("Brackets in field 'author' don't match!");
+            }
+
             if (text.charAt(i) == '[') {
                 int count = 1;
                 while (count > 0 && i < text.length() - 1) {
@@ -195,13 +227,17 @@ public class PersonParser extends WarningHandler {
     }
 
     /**
-     *
+     * Returns the case given word starts with as specified in BibTeX standard.
      * @param word String of consecutive non-white characters
      * @return what case the word "starts with" (BibTeX manner)
      */
     private Case startsWith(String word) throws ParseException {
         for (int i = 0; i < word.length(); i++) {
             Character c = word.charAt(i);
+
+            if (c == ']') {
+                throw new ParseException("Brackets in field 'author' don't match!");
+            }
 
             if (c == '[') {
                 int count = 1;
