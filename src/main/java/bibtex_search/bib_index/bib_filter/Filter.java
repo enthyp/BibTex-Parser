@@ -5,9 +5,6 @@ import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.Set;
 
-// TODO: add general filters for exact match with chosen field, for inclusion, interval maybe.
-// TODO: consider how to reduce code overhead with different filters and criteria.
-
 /**
  * A filter object used to retain only matching IRecord instances. It is specific for a set
  * of IRecord instances and for a type of search criterion, e.g. search by author's last name.
@@ -28,16 +25,26 @@ public abstract class Filter {
         }
     }
 
-    protected void setup() {}
-
-    protected void addRecord(IRecord record) {}
+    /**
+     * This method does whatever is necessary before records can be added
+     * to inner data structure of filter instance.
+     */
+    protected abstract void setup();
 
     /**
-     *
-     * @param currentResults what is to be filtered
-     * @param criterion specific
+     * This method adds a record to inner data structure for efficient searching.
+     * Subclasses must implement this method.
+     * @param record entry to be added to the filter.
+     */
+    protected abstract void addRecord(IRecord record);
+
+    /**
+     * This method applies the filter to all records that it was constructed with given the search
+     * criterion.
+     * @param currentResults what we want to filter from.
+     * @param criterion specific search criterion.
      * @return a new ISearchResults object, containing only the results
      * that passed through the filter.
      */
-    public abstract ISearchResults apply(ISearchResults currentResults, ISearchCriterion criterion);
+    public abstract ISearchResults apply(ISearchResults currentResults, BaseSearchCriterion criterion);
 }

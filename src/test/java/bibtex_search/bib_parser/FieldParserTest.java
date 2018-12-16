@@ -80,7 +80,6 @@ public class FieldParserTest {
         fieldParser.parse(fieldString);
     }
 
-    // TODO: empty value must be parsed, but should not be allowed for mandatory fields (Validator).
     @Test
     public void emptyValueQuotesTest() throws ParseException {
         String fieldString = "blob = \"\"";

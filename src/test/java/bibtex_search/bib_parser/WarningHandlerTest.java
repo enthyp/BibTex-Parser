@@ -20,7 +20,7 @@ public class WarningHandlerTest {
     @Test
     public void getLineNumberTest() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException, IOException {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                 .collect(Collectors.joining("\n"));

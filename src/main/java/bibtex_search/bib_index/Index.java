@@ -1,6 +1,6 @@
 package bibtex_search.bib_index;
 
-import bibtex_search.bib_index.bib_filter.ISearchCriterion;
+import bibtex_search.bib_index.bib_filter.BaseSearchCriterion;
 import bibtex_search.bib_index.bib_filter.FilterFactory;
 import bibtex_search.bib_index.bib_filter.Filter;
 import bibtex_search.bib_parser.record.IRecord;
@@ -13,24 +13,37 @@ import java.util.*;
  */
 public class Index implements IIndex {
 
+    /**
+     * A map between record keys and records themselves.
+     */
     private Map<String, IRecord> keyToRecord = new LinkedHashMap<>();
-    private Map<ISearchCriterion, Filter> filters = new HashMap<>();
 
+    /**
+     * A map between search criteria and filters that can apply them.
+     */
+    private Map<BaseSearchCriterion, Filter> filters = new HashMap<>();
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void build(Set<IRecord> records) {
         for (IRecord record: records)
             keyToRecord.put(record.getKey(), record);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ISearchResults search(List<ISearchCriterion> criteria) {
+    public ISearchResults search(List<BaseSearchCriterion> criteria) {
         /* No criterion from command line arguments was recognized. */
         if (criteria == null)
             return null;
 
         ISearchResults searchResults = new SearchResults(keyToRecord.keySet());
 
-        for (ISearchCriterion criterion : criteria) {
+        for (BaseSearchCriterion criterion : criteria) {
             Filter filter;
             if (!filters.containsKey(criterion)) {
                 /* Build the filter if it was not accessed before. */
@@ -55,6 +68,9 @@ public class Index implements IIndex {
         return this.keyToRecord.get(key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void show(ISearchResults keys) {
         if (keys != null) {

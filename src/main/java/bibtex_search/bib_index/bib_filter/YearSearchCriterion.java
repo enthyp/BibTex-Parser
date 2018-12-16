@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class YearSearchCriterion implements ISearchCriterion {
+public class YearSearchCriterion extends BaseSearchCriterion {
 
     private Set<String> years;
 

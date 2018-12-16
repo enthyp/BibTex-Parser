@@ -104,9 +104,4 @@ public class Person {
             }
         }
     }
-
-    // TODO: remove, use proper tests.
-    public String contentString() {
-        return String.format("First: %s\nvon: %s\nLast: %s\njr: %s", first, von, last, jr);
-    }
 }

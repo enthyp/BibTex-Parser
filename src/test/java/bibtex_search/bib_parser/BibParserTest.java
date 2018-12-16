@@ -25,11 +25,11 @@ public class BibParserTest {
 
     @Test
     public void parseFileTest() throws IOException {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
 
         BibParser bibParser = new BibParser();
-        bibParser.parse(file);
+        bibParser.parse(file.getAbsolutePath());
 
         Set<IRecord> records = bibParser.getRecords();
         StringBuilder builder = new StringBuilder();
@@ -60,11 +60,56 @@ public class BibParserTest {
         assertEquals(expectedOutput, builder.toString());
     }
 
+
+    @Test
+    public void crossRef2Test() throws IOException {
+        String fileName = "/bib_test/cross_reference2.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String outputFileName = "/bib_test/cross_reference2_out.bib";
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        BibParser bibParser = new BibParser();
+        bibParser.parse(file.getAbsolutePath());
+
+        Set<IRecord> records = bibParser.getRecords();
+        StringBuilder builder = new StringBuilder();
+        for (IRecord record : records)
+            builder.append(record.toString());
+
+        //System.out.println(builder.toString());
+        assertEquals(expectedOutput, builder.toString());
+    }
+
     @Test
     public void alternativesTest() throws IOException {
         String fileName = "/bib_test/alternatives.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String outputFileName = "/bib_test/alternatives_out.bib";
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        BibParser bibParser = new BibParser();
+        bibParser.parse(file.getAbsolutePath());
+
+        Set<IRecord> records = bibParser.getRecords();
+        StringBuilder builder = new StringBuilder();
+        for (IRecord record : records)
+            builder.append(record.toString());
+
+        assertEquals(expectedOutput, builder.toString());
+    }
+
+
+    @Test
+    public void emptyMandatoryTest() throws IOException {
+        String fileName = "/bib_test/empty_mandatory.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String outputFileName = "/bib_test/empty_mandatory_out.bib";
 
         File outFile = new File(this.getClass().getResource(outputFileName).getFile());
         String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)

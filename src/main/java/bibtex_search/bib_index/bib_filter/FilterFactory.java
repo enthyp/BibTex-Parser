@@ -14,7 +14,14 @@ import java.util.*;
  */
 public class FilterFactory {
 
-    public static Filter getFilter(ISearchCriterion criterion, Set<IRecord> records) {
+    /**
+     * A factory method that produces a filter object appropriate for given criterion.
+     * @param criterion search criterion instance.
+     * @param records entries to which resulting filter must apply.
+     * @return appropriate filter instance or null if a problem was encountered or no applicable
+     * filter was found.
+     */
+    public static Filter getFilter(BaseSearchCriterion criterion, Set<IRecord> records) {
         if (filterChoice.containsKey(criterion.getName())) {
             try {
                 Class<? extends Filter> filterClazz = filterChoice.get(criterion.getName());
@@ -32,13 +39,15 @@ public class FilterFactory {
 
 
     /**
+     * A factory method that produces a list of criterion objects for given string representation
+     * of search criteria.
      *
      * @param criteriaByNames a map from criterion name to a list of values for that criterion.
      * @return a list of found criteria - an empty one if no criteria were passed as arguments,
-     * a NULL value if no criteria were recognized correctly.
+     * a null value if no criteria were recognized correctly.
      */
-    public static List<ISearchCriterion> getCriteria(Map<String, String[]> criteriaByNames) {
-        List<ISearchCriterion> criteria = new ArrayList<>();
+    public static List<BaseSearchCriterion> getCriteria(Map<String, String[]> criteriaByNames) {
+        List<BaseSearchCriterion> criteria = new ArrayList<>();
 
         if (!criteriaByNames.isEmpty()) {
             for (Map.Entry<String, String[]> c : criteriaByNames.entrySet()) {
@@ -47,10 +56,10 @@ public class FilterFactory {
 
                 if (criterionChoice.containsKey(name)) {
                     try {
-                        Class<? extends ISearchCriterion> criterionClazz = criterionChoice.get(name);
-                        Constructor<? extends ISearchCriterion> constructor = criterionClazz
+                        Class<? extends BaseSearchCriterion> criterionClazz = criterionChoice.get(name);
+                        Constructor<? extends BaseSearchCriterion> constructor = criterionClazz
                                 .getConstructor(String[].class);
-                        ISearchCriterion criterion = constructor.newInstance((Object) values);
+                        BaseSearchCriterion criterion = constructor.newInstance((Object) values);
                         criteria.add(criterion);
                     } catch (NoSuchMethodException | InstantiationException |
                             IllegalAccessException | InvocationTargetException exc) {
@@ -68,13 +77,20 @@ public class FilterFactory {
         return criteria;
     }
 
-    private static final Map<String, Class<? extends ISearchCriterion>> criterionChoice =
-            new HashMap<String, Class<? extends ISearchCriterion>>() {{
+    /**
+     * A map between criterion name and a class object representing that criterion.
+     */
+    private static final Map<String, Class<? extends BaseSearchCriterion>> criterionChoice =
+            new HashMap<String, Class<? extends BaseSearchCriterion>>() {{
                 put("authors", AuthorSearchCriterion.class);
                 put("categories", CategorySearchCriterion.class);
                 put("years", YearSearchCriterion.class);
             }};
 
+    /**
+     * A map between a criterion name and a class object representing a filter that can apply
+     * this criterion.
+     */
     private static final Map<String, Class<? extends Filter>> filterChoice =
             new HashMap<String, Class<? extends Filter>>() {{
         put("authors", AuthorFilter.class);

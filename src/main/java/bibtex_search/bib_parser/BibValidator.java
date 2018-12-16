@@ -41,9 +41,6 @@ public class BibValidator {
             } else if (status.equals(RecordStatus.UNDETERMINED)) {
                 /* Cross-references may save this record in subsequent iterations. */
                 potentialRecords.put(entry.getKey(), record);
-            } else {
-                System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields!\n",
-                        record.getKey()));
             }
         }
 
@@ -60,25 +57,26 @@ public class BibValidator {
                 IRecord record = new Record((Record)entry.getValue());
                 String crossRef = record.getCrossRef();
 
-                if (crossRef != null && finalRecords.keySet().contains(crossRef)) {
+                if (crossRef != null
+                        && (finalRecords.containsKey(crossRef) || newPotentialRecords.containsKey(crossRef))) {
                     /* Record either is fixed by its cross-reference or is not. */
-                    RecordStatus status = this.validateWithCrossRef(record, finalRecords);
+                    RecordStatus status = this.validateWithCrossRef(record, finalRecords,
+                            newPotentialRecords.containsKey(crossRef));
 
                     if (status.equals(RecordStatus.VALID)) {
                         /* If it's OK - it is saved to results. */
                         finalRecords.put(record.getKey(), record);
-                    } else {
-                        System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields!\n",
-                                record.getKey()));
                     }
 
-                    /* Anyway it's been processed now and is no longer potential. */
+                    if (!status.equals(RecordStatus.UNDETERMINED)) {
+                        /* Record has been processed now and is no longer potential. */
+                        newPotentialRecords.remove(record.getKey());
+                    }
+                } else {
+                    /* The record has a cross-reference to a discarded record or none - no hope for it. */
                     newPotentialRecords.remove(record.getKey());
-                } else if (crossRef == null || !newPotentialRecords.containsKey(crossRef)) {
-                    /* The record has a cross-reference to a discarded record - no hope for it. */
-                    newPotentialRecords.remove(record.getKey());
-                    System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields!\n",
-                            record.getKey()));
+                    System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields " +
+                            "and references an incorrect record.\n", record.getKey()));
                 }
             }
 
@@ -106,6 +104,7 @@ public class BibValidator {
 
         /* Will remain `true` if record has all the mandatory fields without cross-referencing. */
         boolean correctAlone = true;
+        Set<String> lacking = new LinkedHashSet<>();
         for (String fieldName : mandatory) {
             /* Check people first. */
             if (fieldName.equals("author") || fieldName.equals("editor")) {
@@ -113,6 +112,7 @@ public class BibValidator {
                     String alternativeFieldName = alternative.get(fieldName);
                     if (!record.getPeople().containsKey(alternativeFieldName)) {
                         correctAlone = false;
+                        lacking.add(fieldName);
                     }
                 }
             } else if (!record.getFields().containsKey(fieldName)) {
@@ -120,9 +120,11 @@ public class BibValidator {
                 if (!record.getFields().containsKey(alternativeFieldName)
                         || record.getFields().get(alternativeFieldName).equals("")) {
                     correctAlone = false;
+                    lacking.add(fieldName);
                 }
             } else if (record.getFields().get(fieldName).equals("")) {
                 correctAlone = false;
+                lacking.add(fieldName);
             }
         }
 
@@ -133,6 +135,8 @@ public class BibValidator {
         } else if (record.getCrossRef() != null) {
             return RecordStatus.UNDETERMINED;
         } else {
+            System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields: %s\n",
+                    record.getKey(), lacking));
             return RecordStatus.INVALID;
         }
     }
@@ -144,16 +148,20 @@ public class BibValidator {
      * the return value upon it.
      * @param record entry to be validated.
      * @param references records that can be used as cross-reference targets.
+     * @param isLenient if `true` then UNDETERMINED is returned instead of INVALID.
      * @return status of the record - VALID if all mandatory fields are in place or are provided
      * by a record in `references`. INVALID if some mandatory fields are lacking and are not
-     * provided by cross-referenced record.
+     * provided by cross-referenced record and `isLenient` is set to `false`. Otherwise UNDETERMINED.
      */
-    private RecordStatus validateWithCrossRef(IRecord record, Map<String, IRecord> references) {
+    private RecordStatus validateWithCrossRef(IRecord record, Map<String, IRecord> references, boolean isLenient) {
         RecordType category = record.getType();
         Set<String> mandatory =  new HashSet<>(mandatoryFields.get(category));
         Map<String, String> alternative = new HashMap<>();
         if (alternatives.containsKey(category))
             alternative.putAll(alternatives.get(category));
+
+        boolean isValid = true;
+        Set<String> lacking = new LinkedHashSet<>();
 
         for (String fieldName : mandatory) {
             /* Check people first. */
@@ -167,10 +175,12 @@ public class BibValidator {
 
                             if (!referenced.getPeople().containsKey(fieldName)
                                     && !referenced.getPeople().containsKey(alternativeFieldName)) {
-                                return RecordStatus.INVALID;
+                                isValid = false;
+                                lacking.add(fieldName);
                             }
                         } else {
-                            return RecordStatus.INVALID;
+                            isValid = false;
+                            lacking.add(fieldName);
                         }
                     }
                 }
@@ -184,21 +194,33 @@ public class BibValidator {
                         /* Referenced records are assumed to be correct. */
                         if (!referenced.getFields().containsKey(fieldName)
                                 && !referenced.getFields().containsKey(alternativeFieldName)) {
-                            return RecordStatus.INVALID;
+                            isValid = false;
+                            lacking.add(fieldName);
                         }
                     } else {
-                        return RecordStatus.INVALID;
+                        isValid = false;
+                        lacking.add(fieldName);
                     }
                 } else if (record.getFields().get(alternativeFieldName).equals("")) {
-                    return RecordStatus.INVALID;
+                    isValid = false;
+                    lacking.add(fieldName);
                 }
             } else if (record.getFields().get(fieldName).equals("")) {
-                return RecordStatus.INVALID;
+                isValid = false;
+                lacking.add(fieldName);
             }
         }
 
-        this.cleanRecord(record);
-        return RecordStatus.VALID;
+        if (isValid) {
+            this.cleanRecord(record);
+            return RecordStatus.VALID;
+        } else if (!isLenient) {
+            System.out.println(String.format("WARNING: Record under key '%s' lacks mandatory fields: %s\n",
+                    record.getKey(), lacking));
+            return RecordStatus.INVALID;
+        } else {
+            return RecordStatus.UNDETERMINED;
+        }
     }
 
     /**
@@ -315,7 +337,9 @@ public class BibValidator {
         return copy;
     }
 
-    /* Behold BibTeX rules in all their glory. */
+    /**
+     * All mandatory fields with respect to entry category.
+     */
     private static Map<RecordType, Set<String>> mandatoryFields = new HashMap<RecordType, Set<String>>() {{
         put(RecordType.ARTICLE, new HashSet<String>(){{
             add("author");
@@ -387,7 +411,9 @@ public class BibValidator {
         }});
     }};
 
-
+    /**
+     * All optional fields with respect to entry category.
+     */
     private static Map<RecordType, Set<String>> optionalFields = new HashMap<RecordType, Set<String>>() {{
         put(RecordType.ARTICLE, new HashSet<String>(){{
             add("volume");
@@ -513,6 +539,9 @@ public class BibValidator {
         }});
     }};
 
+    /**
+     * All alternatives for different field names with respect to entry category.
+     */
     private static Map<RecordType, Map<String, String>> alternatives =
         new HashMap<RecordType, Map<String, String>>() {{
             put(RecordType.BOOK, new HashMap<String, String>(){{

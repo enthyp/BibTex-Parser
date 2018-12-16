@@ -89,7 +89,6 @@ public class RecordParser extends WarningHandler {
                 PersonParser personParser = new PersonParser();
 
                 try {
-                    /* TODO: test multiline people. */
                     String peopleString = personMatcher.group("person");
 
                     int personStart = this.getLineNumber(personMatcher.start());

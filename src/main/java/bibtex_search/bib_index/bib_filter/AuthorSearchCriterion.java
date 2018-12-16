@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AuthorSearchCriterion implements ISearchCriterion {
+public class AuthorSearchCriterion extends BaseSearchCriterion {
     /**
      * Authors' last names
      */

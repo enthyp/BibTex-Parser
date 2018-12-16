@@ -10,16 +10,16 @@ import java.io.File;
 public class MainTest {
     @Test
     public void mainTestCategories() {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
         String categories = "unpublished book";
-        Main.main(new String[] {"-f", filePath, "-s", "book"});
+        Main.main(new String[] {"-f", filePath, "-c", "book"});
     }
 
     @Test
     public void mainTestAuthors() {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
         String authors = "Manmaker";
@@ -29,7 +29,7 @@ public class MainTest {
 
     @Test
     public void mainTestYears() {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
 
@@ -38,7 +38,7 @@ public class MainTest {
 
     @Test
     public void mainTestAll() {
-        String fileName = "/bib_test/xampl_simplified.bib";
+        String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
 

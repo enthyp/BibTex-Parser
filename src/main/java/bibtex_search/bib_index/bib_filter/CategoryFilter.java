@@ -40,7 +40,7 @@ public class CategoryFilter extends Filter {
 
 
     @Override
-    public ISearchResults apply(ISearchResults currentResults, ISearchCriterion criterion) {
+    public ISearchResults apply(ISearchResults currentResults, BaseSearchCriterion criterion) {
         if (criterion instanceof CategorySearchCriterion && currentResults instanceof SearchResults) {
             /* Get keys for all records of specified categories. */
             Set<String> categoryKeys = new HashSet<>();
