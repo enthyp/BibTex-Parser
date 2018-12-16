@@ -7,9 +7,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 // TODO: use assertions.
 // TODO: test case independence for categories.
@@ -25,7 +25,7 @@ public class BibParserTest {
 
     @Test
     public void parseFileTest() throws IOException {
-        String fileName = "/xampl_simplified.bib";
+        String fileName = "/bib_test/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
 
         BibParser bibParser = new BibParser();
@@ -40,29 +40,45 @@ public class BibParserTest {
     }
 
     @Test
-    public void lineEndIndexTest() throws IOException {
-        String fileName = "/xampl_record1.bib";
+    public void crossRefTest() throws IOException {
+        String fileName = "/bib_test/cross_reference.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
+        String outputFileName = "/bib_test/cross_reference_out.bib";
 
-        /* Read all of file contents to file. */
-        String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
                 .collect(Collectors.joining("\n"));
 
-        Pattern lineEnds = Pattern.compile("\n");
-        Matcher matcher = lineEnds.matcher(fileContent);
+        BibParser bibParser = new BibParser();
+        bibParser.parse(file.getAbsolutePath());
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            int cumSum = 0;
-            while (matcher.find()) {
-                String line = br.readLine();
-                System.out.println(matcher.start() + " " + matcher.end());
-                System.out.println(line + " ! " + (cumSum += line.length()) + "\n");
-            }
-        }
+        Set<IRecord> records = bibParser.getRecords();
+        StringBuilder builder = new StringBuilder();
+        for (IRecord record : records)
+            builder.append(record.toString());
 
-//        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-//            br.skip(10347);
-//            System.out.println(Character.toChars(br.read()));
-//        }
+        assertEquals(expectedOutput, builder.toString());
     }
+
+    @Test
+    public void alternativesTest() throws IOException {
+        String fileName = "/bib_test/alternatives.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String outputFileName = "/bib_test/alternatives_out.bib";
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        BibParser bibParser = new BibParser();
+        bibParser.parse(file.getAbsolutePath());
+
+        Set<IRecord> records = bibParser.getRecords();
+        StringBuilder builder = new StringBuilder();
+        for (IRecord record : records)
+            builder.append(record.toString());
+
+        assertEquals(expectedOutput, builder.toString());
+    }
+
 }

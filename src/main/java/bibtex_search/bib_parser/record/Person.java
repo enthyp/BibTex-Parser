@@ -36,6 +36,14 @@ public class Person {
         this.jr = jr;
     }
 
+    public Person(Person other) {
+        this.type = other.type;
+        this.first = other.first;
+        this.last = other.last;
+        this.von = other.von;
+        this.jr = other.jr;
+    }
+
     /**
      * Returns person's first name in accordance with BibTeX standard.
      * @return person's first name in accordance with BibTeX standard.

@@ -12,8 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-
 // TODO: use assertions.
 // TODO: test line number correctness for warnings from field, author, record level
 // with different reasons for the warning.
@@ -22,7 +20,7 @@ public class WarningHandlerTest {
     @Test
     public void getLineNumberTest() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException, IOException {
-        String fileName = "/xampl_simplified.bib";
+        String fileName = "/bib_test/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                 .collect(Collectors.joining("\n"));

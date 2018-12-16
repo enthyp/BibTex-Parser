@@ -27,11 +27,11 @@ public class PersonParser extends WarningHandler {
      * @return object representation of person's data.
      */
     public Person parse(String personString) throws ParseException {
-        int commaCount = personString.split(",", -1).length - 1;
+        int vertBarCount = personString.split("\\|", -1).length - 1;
         Person person;
 
         try {
-            switch (commaCount) {
+            switch (vertBarCount) {
                 case 0:
                     person = parse1st(personString);
                     break;
@@ -96,7 +96,7 @@ public class PersonParser extends WarningHandler {
      * @return object representation of person's data.
      */
     private Person parse2nd(String personData) throws ParseException {
-        String[] blocks = personData.split(",", -1);
+        String[] blocks = personData.split("\\|", -1);
         String vonLastBlock = blocks[0];
         String first = blocks[1];
 
@@ -132,7 +132,7 @@ public class PersonParser extends WarningHandler {
      * @return object representation of person's data.
      */
     private Person parse3rd(String personData) throws ParseException {
-        String[] blocks = personData.split(",", -1);
+        String[] blocks = personData.split("\\|", -1);
         String vonLastBlock = blocks[0];
         String jr = blocks[1];
         String first = blocks[2];
@@ -166,8 +166,8 @@ public class PersonParser extends WarningHandler {
 
     /**
      * Split given text into words, treating balanced bracket blocks as single characters.
-     * @param text sequence of characters we want to split into words in BibTex manner
-     * @return array of words
+     * @param text sequence of characters we want to split into words in BibTex manner.
+     * @return array of words.
      */
     public String[] splitIntoWords(String text) throws ParseException {
         ArrayList<String> words = new ArrayList<>();
@@ -228,8 +228,8 @@ public class PersonParser extends WarningHandler {
 
     /**
      * Returns the case given word starts with as specified in BibTeX standard.
-     * @param word String of consecutive non-white characters
-     * @return what case the word "starts with" (BibTeX manner)
+     * @param word String of consecutive non-white characters.
+     * @return what case the word "starts with" (BibTeX manner).
      */
     private Case startsWith(String word) throws ParseException {
         for (int i = 0; i < word.length(); i++) {

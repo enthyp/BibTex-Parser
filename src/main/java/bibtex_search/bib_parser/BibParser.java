@@ -14,9 +14,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 // TODO: add cross-references handling.
-// TODO: add a method to match balanced character blocks.
-// (with list of admissible characters as a parameter)
-// TODO: then use that method in `this.matchEntries` instead of regex.
 // TODO: use interfaces instead of implementations of lower-level parsers.
 
 /**
@@ -27,22 +24,32 @@ import java.util.stream.Collectors;
 public class BibParser extends WarningHandler implements IBibParser {
 
     /**
-     * All entries found in the input file.
+     * A map between (unique) record keys and records themselves.
      */
-    private Set<IRecord> records = new LinkedHashSet<>();
+    private Map<String, IRecord> keyToRecord;
 
     /**
      * A map between a string variable name and its value.
      */
-    private Map<String, String> stringVars = new HashMap<>();
+    private Map<String, String> stringVars;
+
+    private BibValidator validator;
+
+    public BibParser() {
+        this.keyToRecord = new LinkedHashMap<>();
+        this.stringVars = new HashMap<>();
+        this.validator = new BibValidator();
+    }
 
     public Set<IRecord> getRecords() {
-        return this.records;
+        return new LinkedHashSet<>(this.keyToRecord.values());
+
     }
 
     public void parse(String filePath) throws IOException {
         File file = new File(filePath);
-        parse(file);
+        this.parse(file);
+        this.keyToRecord = validator.validate(keyToRecord);
     }
 
     /**
@@ -98,7 +105,8 @@ public class BibParser extends WarningHandler implements IBibParser {
         try {
             Record result = recordParser.parseRecord(recordContent);
             /* Only adds new entries. */
-            records.add(result);
+            if (!keyToRecord.containsKey(result.getKey()))
+                keyToRecord.put(result.getKey(), result);
         } catch (ParseException exc) {
             this.handle(exc);
         }
@@ -132,13 +140,5 @@ public class BibParser extends WarningHandler implements IBibParser {
         Pattern recordPattern = Pattern.compile(regex, Pattern.DOTALL);
 
         return recordPattern.matcher(fileContent);
-    }
-
-    /**
-     * Runs over all found entries and checks if they have all mandatory fields (including cross-refs).
-     *
-     */
-    private void validate() {
-
     }
 }

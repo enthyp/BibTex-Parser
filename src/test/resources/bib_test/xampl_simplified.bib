@@ -9,7 +9,7 @@
         # "\newcommand[\switchargs][2][#2#1] " }
 
 @ARTICLE{article-minimal,
-   aUthor = "[L[eslie] A. Aamport]"|
+   aUthor = "[L[eslie] A. Aamport]",
    title = "[The Gnats and Gnus Document Preparation System]",
    journal = "[\mbox[G-Animal's] Journal]",
    year = "1986",
@@ -17,7 +17,7 @@
 
 @STRING{jul = "July"}
 @ARTICLE{article-full,
-   author = "[L[eslie] A. Aamport]"|
+   author = "[L[eslie] A. Aamport]",
    title = "[The Gnats and Gnus Document Preparation System]",
    journal = "[\mbox[G-Animal's] Journal]",
    year = "1986",
@@ -33,9 +33,9 @@ cross referenced (so is the NOTE field, in addition to its imparting
 information).
 
 @ARTICLE{article-crossref,
-   crossref = "[WHOLE-JOURNAL]",
+   crossref = "whole-journal",
    key = "",
-   author = "[L[eslie] A. Aamport]"|
+   author = "[L[eslie] A. Aamport]",
    title = "[The Gnats and Gnus Document Preparation System]",
    pages = "73+",
    note = "This is a cross-referencing ARTICLE entry",
@@ -53,7 +53,7 @@ information).
 }
 
 @INBOOK{inbook-minimal,
-   author = "Donald E. Knuth"|
+   author = "Donald E. Knuth",
    title = "Fundamental Algorithms",
    publisher = "Addison-Wesley",
    year = "[\noopsort[1973b]]1973",
@@ -63,7 +63,7 @@ information).
 @STRING{jan = "january"}
 
 @INBOOK{inbook-full,
-   author = "Donald E. Knuth"|
+   author = "Donald E. Knuth",
    title = "Fundamental Algorithms",
    volume = "1",
    series = "The Art of Computer Programming",
@@ -91,14 +91,14 @@ information).
 }
 
 @BOOK{book-minimal,
-   author = "Donald E. Knuth"|
+   author = "Donald E. Knuth",
    title = "Seminumerical Algorithms",
    publisher = "Addison-Wesley",
    year = "[\noopsort[1973c]]1981",
 }
 
 @BOOK{book-full,
-   author = "Donald E. Knuth"|
+   author = "Donald E. Knuth",
    title = "Seminumerical Algorithms",
    volume = "2",
    series = "The Art of Computer Programming",
@@ -121,7 +121,8 @@ information).
 }
 
 @BOOK{whole-set,
-   author = "Donald E. Knuth"|
+   crossref = "inbook-crossref",
+   author = "Donald E. Knuth",
    publisher = "Addison-Wesley",
    title = "The Art of Computer Programming",
    series = "Four volumes",
@@ -135,7 +136,7 @@ information).
 }
 
 @BOOKLET{booklet-full,
-   author = "Jill C. Knvth"|
+   author = "Jill C. Knvth",
    title = "The Programming of Computer Art",
    howpublished = "Vernier Art Center",
    address = "Stanford California",
@@ -145,7 +146,7 @@ information).
 }
 
 @INCOLLECTION{incollection-minimal,
-   author = "Daniel D. Lincoll"|
+   author = "Daniel D. Lincoll",
    title = "Semigroups of Recurrences",
    booktitle = "High Speed Computer and Algorithm Organization",
    publisher = "Academic Press",
@@ -153,7 +154,7 @@ information).
 }
 
 @INCOLLECTION{incollection-full,
-   author = "Daniel D. Lincoll"|
+   author = "Daniel D. Lincoll",
    title = "Semigroups of Recurrences",
    editor = "David J. Lipcoll and D. H. Lawrie and A. H. Sameh",
    booktitle = "High Speed Computer and Algorithm Organization",
@@ -172,7 +173,7 @@ information).
 
 @INCOLLECTION{incollection-crossref,
    crossref = "whole-collection",
-   author = "Daniel D. Lincoll"|
+   author = "Daniel D. Lincoll",
    title = "Semigroups of Recurrences",
    pages = "179--183",
    note = "This is a cross-referencing INCOLLECTION entry",
@@ -201,7 +202,7 @@ information).
 @STRING{may = "May"}
 
 @MANUAL{manual-full,
-   author = "Larry Manmaker"|
+   author = "Larry Manmaker",
    title = "The Definitive Computer Manual",
    organization = "Chips-R-Us",
    address = "Silicon Valley",
@@ -212,7 +213,7 @@ information).
 }
 
 @MASTERSTHESIS{mastersthesis-minimal,
-   author = "[\'[E]]douard Masterly"|
+   author = "[\'[E]]douard Masterly",
    title = "Mastering Thesis Writing",
    school = "Stanford University",
    year = "1988",
@@ -222,7 +223,7 @@ information).
 @STRING{aug = "August"}
 
 @MASTERSTHESIS{mastersthesis-full,
-   author = "[\'[E]]douard Masterly"|
+   author = "[\'[E]]douard Masterly",
    title = "Mastering Thesis Writing",
    school = "Stanford University",
    type = "Master's project",
@@ -240,7 +241,7 @@ information).
 @STRING{oct = "October"}
 
 @MISC{misc-full,
-   author = "Joe-Bob Missilany"|
+   author = "Joe-Bob Missilany",
    title = "Handing out random pamphlets in airports",
    howpublished = "Handed out at O'Hare",
    month = "oct",
@@ -255,7 +256,7 @@ information).
 @STRING{STOC = " Symposium on the Theory of Computing"}
 
 @INPROCEEDINGS{inproceedings-minimal,
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis"|
+   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
    title = "On Notions of Information Transfer in [VLSI] Circuits",
    booktitle = "Proc. Fifteenth Annual ACM" # STOC,
    year = "1983",
@@ -264,7 +265,7 @@ information).
 @STRING{mar = "March"}
 
 @INPROCEEDINGS{inproceedings-full,
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis"|
+   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
    title = "On Notions of Information Transfer in [VLSI] Circuits",
    editor = "Wizard V. Oz and Mihalis Yannakakis"|
    booktitle = "Proc. Fifteenth Annual ACM" # STOC,
@@ -281,7 +282,7 @@ information).
 
 @INPROCEEDINGS{inproceedings-crossref,
    crossref = "whole-proceedings",
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis"|
+   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
    title = "On Notions of Information Transfer in [VLSI] Circuits",
    organization = "",
    pages = "133--139",
@@ -318,14 +319,14 @@ information).
 }
 
 @PHDTHESIS{phdthesis-minimal,
-   author = "F. Phidias Phony-Baloney"|
+   author = "F. Phidias Phony-Baloney",
    title = "Fighting Fire with Fire: Festooning [F]rench Phrases",
    school = "Fanstord University",
    year = "1988",
 }
 
 @PHDTHESIS{phdthesis-full,
-   author = "F. Phidias Phony-Baloney"|
+   author = "F. Phidias Phony-Baloney",
    title = "Fighting Fire with Fire: Festooning [F]rench Phrases",
    school = "Fanstord University",
    type = "[PhD] Dissertation",
@@ -336,14 +337,14 @@ information).
 }
 
 @TECHREPORT{techreport-minimal,
-   author = "Tom Terrific"|
+   author = "Tom Terrific",
    title = "An [$O(n \log n / \! \log\log n)$] Sorting Algorithm",
    institution = "Fanstord University",
    year = "1988",
 }
 
 @TECHREPORT{techreport-full,
-   author = "Tom T[\'[e]]rrific"|
+   author = "Tom T[\'[e]]rrific",
    title = "An [$O(n \log n / \! \log\log n)$] Sorting Algorithm",
    institution = "Fanstord University",
    type = "Wishful Research Result",
@@ -355,7 +356,7 @@ information).
 }
 
 @UNPUBLISHED{unpublished-minimal,
-   author = "Ulrich [\[U]]nderwood and Ned [\~N]et and Paul [\=[P]]ot"|
+   author = "Ulrich [\[U]]nderwood and Ned [\~N]et and Paul [\=[P]]ot",
    title = "Lower Bounds for Wishful Research Results",
    note = "Talk at Fanstord University (this is a minimal UNPUBLISHED entry)",
 }
@@ -364,9 +365,9 @@ information).
 @STRING{dec = "December"}
 
 @UNPUBLISHED{unpublished-full,
-   author = "Ulrich [\"[U]]nderwood and Ned [\~N]et and Paul [\=[P]]ot"|
+   author = "Ulrich [\''[U]]nderwood and Ned [\~N]et and Paul [\=[P]]ot",
    title = "Lower Bounds for Wishful Research Results",
-   month = nov # ", " # dec,
+   month = nov # "; " # dec,
    year = "1988",
    note = "Talk at Fanstord University (this is a full UNPUBLISHED entry)",
 }

@@ -1,6 +1,5 @@
 package bibtex_search.bib_parser;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.cli.ParseException;
 
 import java.util.Map;

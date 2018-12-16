@@ -23,11 +23,6 @@ public class Record implements IRecord {
      */
     private Map<String, String> fields;
 
-    /**
-     * A set of keys of records cross-referenced in this record.
-     */
-    private Set<String> crossRefs;
-
     public Record(RecordType type, String key, Map<String, Set<Person>> people, Map<String, String> fields) {
         this.type = type;
         this.key = key;
@@ -44,6 +39,20 @@ public class Record implements IRecord {
             }});
         }};
         this.fields = fields;
+    }
+
+    public Record(Record other) {
+        this.type = other.getType();
+        this.key = other.getKey();
+        this.fields = new LinkedHashMap<>(other.getFields());
+        this.people = new LinkedHashMap<>();
+        for (Map.Entry<String, Set<Person>> entry : other.getPeople().entrySet()) {
+            Set<Person> newPeople = new LinkedHashSet<>();
+            for (Person person : entry.getValue()) {
+                newPeople.add(new Person(person));
+            }
+            this.people.put(entry.getKey(), newPeople);
+        }
     }
 
     @Override
@@ -161,7 +170,17 @@ public class Record implements IRecord {
     }
 
     @Override
-    public Set<String> getCrossRefs() {
-        return crossRefs;
+    public String getCrossRef() {
+        if (this.fields.containsKey("crossref"))
+            return fields.get("crossref");
+        return null;
+    }
+
+    public void removeField(String fieldName) {
+        this.getFields().remove(fieldName);
+    }
+
+    public void removePersonType(String personType) {
+        this.getPeople().remove(personType);
     }
 }

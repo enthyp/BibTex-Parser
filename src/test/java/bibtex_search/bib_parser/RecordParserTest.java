@@ -22,18 +22,67 @@ import static org.junit.Assert.*;
 public class RecordParserTest {
 
     @Test
-    public void parseRecord() throws IOException, ParseException {
-        String fileName = "/xampl_record.bib";
+    public void correctRecordTest() throws IOException, ParseException {
+        String fileName = "/record_test/correct_record.bib";
+        String outputFileName = "/record_test/correct_record_out.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
         String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                     .collect(Collectors.joining("\n"));
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
 
         RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
             put("var1", "stuff ");
         }});
 
         recordParser.setLineBeginnings(fileContent, 1);
+        String output = recordParser.parseRecord(fileContent).toString();
+        assertEquals(output, expectedOutput);
+    }
 
-        System.out.println(recordParser.parseRecord(fileContent));
+    @Test
+    public void wrongCommasTest() throws IOException, ParseException {
+        String fileName = "/record_test/wrong_commas.bib";
+        String outputFileName = "/record_test/wrong_commas_out.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
+            put("var1", "stuff ");
+        }});
+
+        recordParser.setLineBeginnings(fileContent, 1);
+        String output = recordParser.parseRecord(fileContent).toString();
+        assertEquals(output, expectedOutput);
+    }
+
+
+    @Test
+    public void lineBreakTest() throws IOException, ParseException {
+        String fileName = "/record_test/line_break.bib";
+        String outputFileName = "/record_test/line_break_out.bib";
+        File file = new File(this.getClass().getResource(fileName).getFile());
+        String fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
+
+        RecordParser recordParser = new RecordParser(new HashMap<String, String>() {{
+            put("var1", "stuff ");
+            put("var2", "more stuff ");
+        }});
+
+        recordParser.setLineBeginnings(fileContent, 1);
+        String output = recordParser.parseRecord(fileContent).toString();
+        assertEquals(output, expectedOutput);
     }
 }

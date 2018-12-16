@@ -34,8 +34,21 @@ public interface IRecord {
     Map<String, String> getFields();
 
     /**
-     * Returns keys of all cross-referenced records.
-     * @return a set of keys of records cross-referenced in this record.
+     * Returns key of cross-referenced entry.
+     * @return a key of an entry cross-referenced in this record or null if there is no
+     * cross-reference.
      */
-    Set<String> getCrossRefs();
+    String getCrossRef();
+
+    /**
+     * Removes a person type from a record entirely, e.g. all authors.
+     * @param personType person type to be removed.
+     */
+    public void removePersonType(String personType);
+
+    /**
+     * Removes field of given name from a record, e.g. "year".
+     * @param fieldName name of a field to be removed.
+     */
+    public void removeField(String fieldName);
 }

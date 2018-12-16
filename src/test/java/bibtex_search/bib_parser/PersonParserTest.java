@@ -63,12 +63,12 @@ public class PersonParserTest {
                 {"AA", "1b", "cc", "dd"}, {"AA", "[b]B", "cc", "dd"}, {"AA", "[b]b", "cc", "dd"},
                 {"AA", "[B]b", "cc", "dd"}, {"AA", "[B]B", "cc", "dd"}, {"AA", "\\BB[b]", "cc", "dd"},
                 {"AA", "\\bb[b]", "cc", "dd"}, {"AA", "[bb]", "cc", "DD"}, {"AA", "bb", "[cc]", "DD"},
-                {"AA", "[bb]", "CC"}, {"bb", "CC,", "AA"}, {"bb", "CC,", "aa"}, {"bb", "CC", "dd", "EE,", "AA"},
-                {"bb,", "AA"}, {"BB,"}, {"bb", "CC,XX,", "AA"}, {"bb", "CC,xx,", "AA"}, {"BB,,", "AA"},
+                {"AA", "[bb]", "CC"}, {"bb", "CC|", "AA"}, {"bb", "CC|", "aa"}, {"bb", "CC", "dd", "EE|", "AA"},
+                {"bb|", "AA"}, {"BB|"}, {"bb", "CC|XX|", "AA"}, {"bb", "CC|xx|", "AA"}, {"BB||", "AA"},
                 {"Paul", "\\'Emile", "Victor"}, {"Paul", "[\\'E]mile", "Victor"}, {"Paul", "\\'emile", "Victor"},
-                {"Paul", "[\\'e]mile", "Victor"}, {"Victor,", "Paul", "\\'Emile"}, {"Victor,", "Paul", "[\\'E]mile"},
-                {"Victor,", "Paul", "\\'emile"}, {"Victor,", "Paul", "[\\'e]mile"}, {"Dominique", "Galouzeau", "de", "Villepin"},
-                {"Dominique", "[G]alouzeau", "de", "Villepin"}, {"Galouzeau", "de", "Villepin,", "Dominique"}};
+                {"Paul", "[\\'e]mile", "Victor"}, {"Victor|", "Paul", "\\'Emile"}, {"Victor|", "Paul", "[\\'E]mile"},
+                {"Victor|", "Paul", "\\'emile"}, {"Victor|", "Paul", "[\\'e]mile"}, {"Dominique", "Galouzeau", "de", "Villepin"},
+                {"Dominique", "[G]alouzeau", "de", "Villepin"}, {"Galouzeau", "de", "Villepin|", "Dominique"}};
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -96,7 +96,14 @@ public class PersonParserTest {
 
     @Test(expected = ParseException.class)
     public void unbalancedTest() throws ParseException {
-        String block = "AA [dfs]fad], borg";
+        String block = "AA [dfs]fad]| borg";
+        PersonParser personParser = new PersonParser();
+        personParser.parse(block);
+    }
+
+    @Test
+    public void emptyTest() throws ParseException {
+        String block = "";
         PersonParser personParser = new PersonParser();
         personParser.parse(block);
     }
