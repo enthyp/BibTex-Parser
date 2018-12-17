@@ -13,45 +13,61 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+// TODO: add cross-references handling.
+// TODO: use interfaces instead of implementations of lower-level parsers.
+
+/**
+ * A parser of .bib files.
+ * This implementation is capable of parsing .bib files simplified
+ * in accordance with specification (not provided here).
+ */
 public class BibParser extends WarningHandler implements IBibParser {
 
-    private Set<IRecord> records = new LinkedHashSet<>();
-    private Map<String, String> stringVars = new HashMap<>();
+    /**
+     * A map between (unique) record keys and records themselves.
+     */
+    private Map<String, IRecord> keyToRecord;
+
+    /**
+     * A map between a string variable name and its value.
+     */
+    private Map<String, String> stringVars;
+
+    private BibValidator validator;
+
+    public BibParser() {
+        this.keyToRecord = new LinkedHashMap<>();
+        this.stringVars = new HashMap<>();
+        this.validator = new BibValidator();
+    }
 
     public Set<IRecord> getRecords() {
-        return this.records;
+        return new LinkedHashSet<>(this.keyToRecord.values());
+
     }
 
-    /**
-     * {@inheritDoc}
-     * Here it is a wrapper method provided to add testability of actual parsing.
-     */
     public void parse(String filePath) throws IOException {
-        File file = getFile(filePath);
-        parse(file);
+        File file = new File(filePath);
+        this.parse(file);
+        this.keyToRecord = validator.validate(keyToRecord);
     }
 
     /**
-     *
-     * @param filePath path to .bib file
-     * @return corresponding File object
-     */
-    private File getFile(String filePath) {
-        return new File(filePath);
-    }
-
-    /**
-     * Adds all records found in a file to `this.records` set.
+     * Adds all records found in a file to the `records` set.
      * @param file File object for input .bib file
      */
     public void parse(File file) throws IOException {
+        /* Check if file exists. */
+        if (!file.exists())
+            throw new FileNotFoundException(String.format("Input file '%s' not found! ", file.getName()));
+
+        /* Read all of the file contents at once. */
         String fileContent;
         try {
-            /* Read all of the file contents at once. */
             fileContent = Files.lines(file.toPath(), StandardCharsets.UTF_8)
                     .collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new IOException("Error reading the input file! " + e.getMessage());
+        } catch (IOException exc) {
+            throw new IOException("IO exception occured! " + exc.getMessage());
         }
 
         /* Set up line beginnings. */
@@ -78,9 +94,10 @@ public class BibParser extends WarningHandler implements IBibParser {
     }
 
     /**
+     * Parses given record and adds it to `records` set.
      *
-     * @param recordContent record's string representation
-     * @param recordStart index of the first character of the record's representation
+     * @param recordContent record's string representation.
+     * @param recordStart index of the first character of the record's representation.
      */
     private void parseRecord(String recordContent, int recordStart) {
         RecordParser recordParser = new RecordParser(stringVars);
@@ -88,16 +105,18 @@ public class BibParser extends WarningHandler implements IBibParser {
         try {
             Record result = recordParser.parseRecord(recordContent);
             /* Only adds new entries. */
-            records.add(result);
+            if (!keyToRecord.containsKey(result.getKey()))
+                keyToRecord.put(result.getKey(), result);
         } catch (ParseException exc) {
             this.handle(exc);
         }
     }
 
     /**
+     * Parses given variable declaration and adds it to `stringVars` map.
      *
-     * @param varContent string variable definition
-     * @param varStart index of the first character of the variable's definition
+     * @param varContent string variable definition.
+     * @param varStart index of the first character of the variable's definition.
      */
     private void parseStringVar(String varContent, int varStart) {
         FieldParser varParser = new FieldParser(stringVars);

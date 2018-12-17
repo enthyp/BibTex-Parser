@@ -10,17 +10,22 @@ import java.util.Map;
 /**
  * {@inheritDoc}
  *
- * This implementation parses for, aside from the input file path, a list of
- * authors' last names and categories of BibTeX records.
+ * This implementation parses for the input file path, a list of
+ * authors' last names, categories of BibTeX records and years of publication.
  */
 public class CLIArgParser implements ICLIArgParser {
 
+    /**
+     * Path to input .bib file passed by the user.
+     */
     private String bibFilePath;
+
+    /**
+     * Map from criteria names to desirable criteria values.
+     */
     private Map<String, String[]> criteria;
 
-    // TODO: check date extension!
     public void parseArgs(String[] args) throws ParseException {
-        // TODO: additional option to suppress warnings?
         Option filePath = Option.builder("f")
                 .longOpt("filepath")
                 .hasArg()
@@ -32,7 +37,7 @@ public class CLIArgParser implements ICLIArgParser {
         Option authors = Option.builder("a")
                 .longOpt("authors")
                 .hasArgs()
-                .argName("author")
+                .argName("authors")
                 .numberOfArgs(Option.UNLIMITED_VALUES)
                 .desc("last names of authors")
                 .build();
@@ -40,7 +45,7 @@ public class CLIArgParser implements ICLIArgParser {
         Option categories = Option.builder("c")
                 .longOpt("categories")
                 .hasArgs()
-                .argName("category")
+                .argName("categories")
                 .numberOfArgs(Option.UNLIMITED_VALUES)
                 .desc("names of categories")
                 .build();
@@ -48,7 +53,7 @@ public class CLIArgParser implements ICLIArgParser {
         Option years = Option.builder("y")
                 .longOpt("years")
                 .hasArgs()
-                .argName("year")
+                .argName("years")
                 .numberOfArgs(Option.UNLIMITED_VALUES)
                 .build();
 
@@ -83,8 +88,8 @@ public class CLIArgParser implements ICLIArgParser {
             PrintWriter printWriter = new PrintWriter(stringWriter);
 
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(printWriter, 80, "java -jar BibTex-Parser.jar", "OPTIONS",
-                    options, formatter.getLeftPadding(), formatter.getDescPadding(), "");
+            formatter.printHelp(printWriter, 90, "java -jar BibTex-Parser.jar", "",
+                    options, formatter.getLeftPadding(), formatter.getDescPadding(), "", true);
             printWriter.flush();
             throw new ParseException(stringWriter.toString());
         }
@@ -97,7 +102,7 @@ public class CLIArgParser implements ICLIArgParser {
     /**
      * {@inheritDoc}
      *
-     * If e.g. no authors were passed then there is no map entry for them.
+     * Admissible values for a criterion name are: "authors", "categories", "years".
      */
     public Map<String, String[]> getCriteria() {
         return this.criteria;

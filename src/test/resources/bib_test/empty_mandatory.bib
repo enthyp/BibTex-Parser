@@ -1,0 +1,38 @@
+% Copyright (C) 1988, 2010 Oren Patashnik.
+% Unlimited copying and redistribution of this file are permitted if it
+% is unmodified.  Modifications (and their redistribution) are also
+% permitted, as long as the resulting file is renamed.
+
+@preamble{ "\newcommand[\noopsort][1][] "
+        # "\newcommand[\printfirst][2][#1] "
+        # "\newcommand[\singleletter][1][#1] "
+        # "\newcommand[\switchargs][2][#2#1] " }
+
+@ARtiCLE{article-minimal,
+   aUthor = "",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   journal = "[\mbox[G-Animal's] Journal]",
+   year = "1986",
+}
+
+@Comment {a = "some stuff"}
+
+@STRInG{jul = "July"}
+@BOOk{article-full,
+   editor = "[L[eslie] A. Aamport]",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   journal = "[\mbox[G-Animal's] Journal]",
+   year = "1986",
+   volume = "41",
+   publisher = "Whoever",
+   number = "7",
+   pages = "73+",
+   month = jul,
+   note = "This is a full ARTICLE entry",
+}
+
+@Book{thing,
+    note = "I lack all mandatory fields and also I cross-reference someone
+    with an alternative field!",
+    crossref="article-full",,
+}

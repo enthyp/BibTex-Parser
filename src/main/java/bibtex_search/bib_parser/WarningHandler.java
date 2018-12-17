@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 /**
  * This class provides a way to print warnings to std output along with boundaries of the
  * block of code that caused a problem.
- *
  */
 public abstract class WarningHandler {
     /* The number the first line of given string had in the original input .bib file. */
@@ -18,7 +17,6 @@ public abstract class WarningHandler {
 
     /* Indices of starting characters of subsequent lines of given string. */
     public ArrayList<Integer> lineBeginnings = new ArrayList<Integer>() {{ add(0); }};
-
 
     /**
      * This is the default way of handling exceptions from lower level parsers.

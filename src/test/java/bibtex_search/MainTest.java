@@ -3,16 +3,20 @@ package bibtex_search;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.stream.Collectors;
 
 public class MainTest {
     @Test
-    public void mainTestCategories() {
+    public void mainTestCategories() throws IOException {
         String fileName = "/xampl_simplified.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
+
         String filePath = file.getAbsolutePath();
         String categories = "unpublished book";
-
-        Main.main(new String[] {"-f", filePath, "-c", categories, "book"});
+        Main.main(new String[] {"-f", filePath, "-c", "book"});
     }
 
     @Test
@@ -22,7 +26,7 @@ public class MainTest {
         String filePath = file.getAbsolutePath();
         String authors = "Manmaker";
 
-        Main.main(new String[] {"-f", filePath, "-a", authors, "Knuth"});
+        Main.main(new String[] {"-f", filePath, "-a", "Ullman"});
     }
 
     @Test
@@ -31,7 +35,7 @@ public class MainTest {
         File file = new File(this.getClass().getResource(fileName).getFile());
         String filePath = file.getAbsolutePath();
 
-        Main.main(new String[] {"-f", filePath, "-y", "1988", "1977", "2022"});
+        Main.main(new String[] {"-f", filePath, "-y", "1977", "2022"});
     }
 
     @Test

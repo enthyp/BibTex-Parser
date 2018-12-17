@@ -18,14 +18,33 @@ public abstract class Filter {
      * filtering later on, even when the criteria change.
      * @param records records for which data structure is built
      */
-    public Filter(Set<IRecord> records) {}
+    public Filter(Set<IRecord> records) {
+        this.setup();
+        for (IRecord record : records) {
+            this.addRecord(record);
+        }
+    }
 
     /**
-     *
-     * @param currentResults what is to be filtered
-     * @param criterion specific
+     * This method does whatever is necessary before records can be added
+     * to inner data structure of filter instance.
+     */
+    protected abstract void setup();
+
+    /**
+     * This method adds a record to inner data structure for efficient searching.
+     * Subclasses must implement this method.
+     * @param record entry to be added to the filter.
+     */
+    protected abstract void addRecord(IRecord record);
+
+    /**
+     * This method applies the filter to all records that it was constructed with given the search
+     * criterion.
+     * @param currentResults what we want to filter from.
+     * @param criterion specific search criterion.
      * @return a new ISearchResults object, containing only the results
      * that passed through the filter.
      */
-    public abstract ISearchResults apply(ISearchResults currentResults, ISearchCriterion criterion);
+    public abstract ISearchResults apply(ISearchResults currentResults, BaseSearchCriterion criterion);
 }

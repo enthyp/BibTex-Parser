@@ -3,9 +3,24 @@ package bibtex_search.bib_parser.record;
 import java.util.*;
 
 public class Record implements IRecord {
+    /**
+     * The category to which the record belongs.
+     */
     private RecordType type;
+
+    /**
+     * Key of the record.
+     */
     private String key;
+
+    /**
+     * A map between the category of a person and a collection of all such people.
+     */
     private Map<String, Set<Person>> people;
+
+    /**
+     * A map between the name of a field and it's value.
+     */
     private Map<String, String> fields;
 
     public Record(RecordType type, String key, Map<String, Set<Person>> people, Map<String, String> fields) {
@@ -24,6 +39,20 @@ public class Record implements IRecord {
             }});
         }};
         this.fields = fields;
+    }
+
+    public Record(Record other) {
+        this.type = other.getType();
+        this.key = other.getKey();
+        this.fields = new LinkedHashMap<>(other.getFields());
+        this.people = new LinkedHashMap<>();
+        for (Map.Entry<String, Set<Person>> entry : other.getPeople().entrySet()) {
+            Set<Person> newPeople = new LinkedHashSet<>();
+            for (Person person : entry.getValue()) {
+                newPeople.add(new Person(person));
+            }
+            this.people.put(entry.getKey(), newPeople);
+        }
     }
 
     @Override
@@ -138,5 +167,20 @@ public class Record implements IRecord {
     @Override
     public Map<String, String> getFields() {
         return this.fields;
+    }
+
+    @Override
+    public String getCrossRef() {
+        if (this.fields.containsKey("crossref"))
+            return fields.get("crossref");
+        return null;
+    }
+
+    public void removeField(String fieldName) {
+        this.getFields().remove(fieldName);
+    }
+
+    public void removePersonType(String personType) {
+        this.getPeople().remove(personType);
     }
 }

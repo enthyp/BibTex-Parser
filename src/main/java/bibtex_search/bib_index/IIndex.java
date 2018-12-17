@@ -1,6 +1,6 @@
 package bibtex_search.bib_index;
 
-import bibtex_search.bib_index.bib_filter.ISearchCriterion;
+import bibtex_search.bib_index.bib_filter.BaseSearchCriterion;
 import bibtex_search.bib_parser.record.IRecord;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Set;
 public interface IIndex {
 
     /**
-     *
+     * This method does all the preprocessing necessary for efficient searching.
      * @param records that should be searched through
      */
     void build(Set<IRecord> records);
@@ -26,11 +26,11 @@ public interface IIndex {
      * @param criteria of the search
      * @return search results
      */
-    ISearchResults search(List<ISearchCriterion> criteria);
+    ISearchResults search(List<BaseSearchCriterion> criteria);
 
     /**
-     *
-     * @param keys of the records found by `search`
+     * This method prints all the records with given keys to std out.
+     * @param keys of the records to be printed.
      */
     void show(ISearchResults keys);
 }

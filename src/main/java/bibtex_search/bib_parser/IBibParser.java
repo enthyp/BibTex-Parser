@@ -11,16 +11,17 @@ import java.util.Set;
 public interface IBibParser {
 
     /**
-     * This method turns a (simplified) .bib file into a Set of IRecord
-     * instances.
+     * This method converts .bib file into a collection of objects
+     * containing information about individual records. Obtained
+     * collection is then stored internally by IBibParser instance.
      *
-     * @param filePath to input .bib file
+     * @param filePath absolute path to input .bib file.
      */
     void parse(String filePath) throws IOException;
 
     /**
-     *
-     * @return parse results - individual entries of the input file
+     * Returns all found entries from given file.
+     * @return a collection of individual entries from the input file.
      */
     Set<IRecord> getRecords();
 }

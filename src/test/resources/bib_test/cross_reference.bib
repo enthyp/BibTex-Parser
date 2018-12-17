@@ -1,0 +1,83 @@
+% Copyright (C) 1988, 2010 Oren Patashnik.
+% Unlimited copying and redistribution of this file are permitted if it
+% is unmodified.  Modifications (and their redistribution) are also
+% permitted, as long as the resulting file is renamed.
+
+@preamble{ "\newcommand[\noopsort][1][] "
+        # "\newcommand[\printfirst][2][#1] "
+        # "\newcommand[\singleletter][1][#1] "
+        # "\newcommand[\switchargs][2][#2#1] " }
+
+@ARtiCLE{article-minimal,
+   aUthor = "[L[eslie] A. Aamport]",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   journal = "[\mbox[G-Animal's] Journal]",
+   year = "1986",
+}
+
+@Comment {a = "some stuff"}
+
+@STRInG{jul = "July"}
+@ARTICLE{article-full,
+   author = "[L[eslie] A. Aamport]",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   journal = "[\mbox[G-Animal's] Journal]",
+   year = "1986",
+   volume = "41",
+   number = "7",
+   pages = "73+",
+   month = jul,
+   note = "This is a full ARTICLE entry",
+}
+
+@ARtiCLE{article-minimal,
+   aUthor = "[L[eslie] A. Aamport]",
+   note = "I have the same key as an entry above me!",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   journal = "[\mbox[G-Animal's] Journal]",
+   year = "1986",
+}
+
+The KEY field is here to override the KEY field in the journal being
+cross referenced (so is the NOTE field, in addition to its imparting
+information).
+
+@ARTICLE{article-crossref1,
+   croSSref = "article-full",
+   key = "",
+   author = "[L[eslie] A. Aamport]",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   pages = "73+",
+   note = "This is a cross-referencing ARTICLE entry",
+}
+
+@ARTICLE{article-crossref2,
+   crossref = "article-crossref1",
+   key = "",
+   author = "[L[eslie] A. Aamport]",
+   title = "[The Gnats and Gnus Document Preparation System]",
+   pages = "73+",
+   note = "This is a cross-referencing ARTICLE entry",
+}
+
+Circular cross-reference example below!
+
+@MISC{random-note-crossref,
+   key = "Volume-2",
+   note = "Volume~2 is listed under Knuth \cite[book-full]"
+}
+
+@manUAL{manual-1,
+   titleGoneWrong ="whatever",
+    crossref = "manual-3"
+ }
+
+@article{article-2,
+    title = "whatever",
+    crossref = "manual-1"
+}
+
+@manUAL{manual-3,
+   tititle="whatever",
+    crossref = "article-2"
+ }

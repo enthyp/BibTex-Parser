@@ -4,16 +4,17 @@ import bibtex_search.bib_index.IIndex;
 import bibtex_search.bib_index.ISearchResults;
 import bibtex_search.bib_index.Index;
 import bibtex_search.bib_index.bib_filter.FilterFactory;
-import bibtex_search.bib_index.bib_filter.ISearchCriterion;
+import bibtex_search.bib_index.bib_filter.BaseSearchCriterion;
 import bibtex_search.bib_parser.BibParser;
 import bibtex_search.bib_parser.IBibParser;
 import bibtex_search.bib_parser.record.IRecord;
 import org.apache.commons.cli.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+
+// TODO: add documentation to every method and field (then you can generate e.g. for public only).
 
 public class Main {
     public static void main(String[] args) {
@@ -30,20 +31,18 @@ public class Main {
                 IIndex index = new Index();
                 Set<IRecord> foundRecords = bibParser.getRecords();
                 index.build(foundRecords);
-                // TODO: test the Index. Heavily.
+
                 /* Get the criteria and search the file accordingly. */
-                List<ISearchCriterion> criteria = FilterFactory.getCriteria(argParser.getCriteria());
+                List<BaseSearchCriterion> criteria = FilterFactory.getCriteria(argParser.getCriteria());
                 ISearchResults results = index.search(criteria);
 
                 /* Print the results to the console. */
                 index.show(results);
-            } catch (FileNotFoundException exc) {
-                System.out.println("File not found: " + exc.getMessage());
             } catch(IOException exc) {
-                System.out.println("IO exception occured: " + exc.getMessage());
+                System.out.println(exc.getMessage());
             }
         } catch (ParseException exc) {
-            System.out.println("Error parsing command line arguments! " + exc.getMessage());
+            System.out.println(exc.getMessage());
         }
     }
 }

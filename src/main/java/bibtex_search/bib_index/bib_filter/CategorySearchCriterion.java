@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class CategorySearchCriterion implements ISearchCriterion {
+public class CategorySearchCriterion extends BaseSearchCriterion {
     private List<RecordType> categories;
 
     private RecordType convert(String type) {
