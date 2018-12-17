@@ -26,7 +26,12 @@ public class BibParserTest {
     @Test
     public void parseFileTest() throws IOException {
         String fileName = "/xampl_simplified.bib";
+        String outputFileName = "/xampl_simplified_out.bib";
         File file = new File(this.getClass().getResource(fileName).getFile());
+
+        File outFile = new File(this.getClass().getResource(outputFileName).getFile());
+        String expectedOutput = Files.lines(outFile.toPath(), StandardCharsets.UTF_8)
+                .collect(Collectors.joining("\n"));
 
         BibParser bibParser = new BibParser();
         bibParser.parse(file.getAbsolutePath());
@@ -36,7 +41,8 @@ public class BibParserTest {
         for (IRecord record : records)
             builder.append(record.toString());
 
-        System.out.println(builder.toString());
+        //System.out.println(builder.toString());
+        assertEquals(builder.toString(), expectedOutput);
     }
 
     @Test

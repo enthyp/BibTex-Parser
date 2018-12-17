@@ -552,6 +552,7 @@ public class BibValidator {
             }});
             put(RecordType.INBOOK, new HashMap<String, String>(){{
                 put("author", "editor");
+                put("chapter", "pages");
                 put("volume", "number");
             }});
             put(RecordType.INCOLLECTION, new HashMap<String, String>(){{
