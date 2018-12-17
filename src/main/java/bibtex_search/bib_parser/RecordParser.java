@@ -10,6 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Parser of individual entries in a .bib file.
+ */
 public class RecordParser extends WarningHandler {
 
     /**
