@@ -6,6 +6,10 @@ import bibtex_search.bib_parser.record.RecordType;
 
 import java.util.*;
 
+/**
+ * This class checks discards records that do not contain mandatory fields. It also checks
+ * cross-references.
+ */
 public class BibValidator {
 
     private enum RecordStatus {
